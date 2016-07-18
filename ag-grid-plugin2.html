@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>all plugin</title>
+	<link rel="stylesheet" type="text/css" href="css/ag-grid-k2.css">
+	<script type="text/javascript" src="js/ag-grid.js"></script>
+	<script type="text/javascript" src="js/es-react.js"></script>
+</head>
+<body>
+<div id="tabBody" class="ag-fresh" style="height: 600px"></div>
+
+<div class="ag-paging-num-box" style="margin-top:40px;" id="numberPageBox">
+	<div class="ag-paging-num-btn">
+		<button type="button" id="PagingNumFirstBtn"><<</button>
+		<button type="button" id="PagingNumPreBtn"><</button>
+	</div>
+	<div class="ag-paging-num-show">
+		<ul id="numberBox">
+			<li class="ag-paging-num-item active">1</li>
+			<li class="ag-paging-num-item">2</li>
+			<li class="ag-paging-num-item">3</li>
+			<li class="ag-paging-num-item">4</li>
+			<li class="ag-paging-num-item">5</li>
+			<li class="ag-paging-num-item">...</li>
+		</ul>
+	</div>
+	<div class="ag-paging-num-btn">
+		<button type="button" id="PagingNumNextBtn">></button>
+		<button type="button" id="PagingNumLastBtn">>></button>
+	</div>
+</div>
+<script type="text/javascript">
+var EventUtil = { // 绑定event的通用函数
+		addHandler: function (element, type, handler) {
+			if (element.addEventListener) {
+				element.addEventListener(type, handler, false);
+			} else if (element.attachEvent) {
+				element.attachEvent('on' + type, handler);
+			} else {
+				element['on' + type] = handler;
+			}
+		},
+
+		removeHandler: function (element, type, handler) {
+			if (element.removeEventListener) {
+				element.removeEventListener(type, handler, false);
+			} else if (element.detachEvent) {
+				element.detachEvent('on' + type, handler);
+			} else {
+				element['on' + type] = null;
+			}
+		}
+	};
+
+
+
+function pageNumBtn () {
+	var PagingNumFirstBtn = document.querySelector('#PagingNumFirstBtn');
+	var PagingNumPreBtn = document.querySelector('#PagingNumPreBtn');
+	var PagingNumNextBtn = document.querySelector('#PagingNumNextBtn');
+	var PagingNumLastBtn = document.querySelector('#PagingNumLastBtn');
+	var numberBtnBox = document.querySelector('#numberPageBox');
+	var btFirst = document.querySelector('#btFirst');
+	var btPrevious = document.querySelector('#btPrevious');
+	var btNext = document.querySelector('#btNext');
+	var btLast = document.querySelector('#btLast');
+	var current = document.querySelector('#current');
+	var numberBox = document.querySelector('#numberBox');
+	var numChange = function (num) {
+		var numberBox = document.querySelector('#numberBox');
+		var numberBtns = numberBox.getElementsByTagName('li');
+    for (var i = 0, len = numberBtns.length; i < len - 1; i++) {
+			if (numberBtns[i].innerHTML === num) {
+				numberBtns[i].classList.add('active');
+			} else {
+				numberBtns[i].classList.remove('active');
+			}
+		}
+	};
+
+ // var
+
+
+	EventUtil.addHandler(numberBtnBox, 'click', function (event) {
+		switch (event.target.id) {
+			case 'PagingNumFirstBtn':
+				btFirst.click();
+				numChange(current.value);
+				break;
+			case 'PagingNumPreBtn':
+				btPrevious.click();
+				numChange(current.value);
+				break;
+			case 'PagingNumNextBtn':
+				btNext.click();
+				numChange(current.value);
+				break;
+			case 'PagingNumLastBtn':
+				btLast.click();
+				numChange(current.value);
+				break;
+			default:
+				return;
+		}
+	});
+
+	EventUtil.addHandler(numberBox, 'click', function () {
+		if (event.target.innerHTML !== '...') {
+			current.focus();
+			current.value = event.target.innerHTML;
+		}
+	});
+}
+
+function MyTagsRender () {}   // 初始化一个构造函数，此为表格渲染的方法
+MyTagsRender.prototype.init = function (params) {
+	this.eGui = document.createElement('div');
+	var node = document.createElement('span');
+	var nodeText = document.createTextNode(params.value);
+	node.appendChild(nodeText);
+	if (params.value.indexOf('Michael') !== -1) {
+		node.style.color = '#0ff';
+	} else {
+		node.style.color = 'red';
+	}
+	this.eGui.appendChild(node);
+}
+
+MyTagsRender.prototype.getGui = function () {
+  return this.eGui
+}
+
+var targetDiv = document.querySelector("#tabBody");
+var tableHeader = [
+	{
+		headerName: 'Make',// 必填，显示在表头的文本
+		field: 'athlete', // 必填， 此项value必须为数据文件中对应的key
+		filter: false,      // filter没设置或者是设置为true时，则显示默认的filter，如果设置了其他的，则显示自己定义的filter
+		sorting: false,
+		style: {'color': 'red'},			// 表格渲染样式设置
+		render: MyTagsRender, 					// 自定义渲染的方法
+		fixed: true, 	// 此属性为当自适应的时候是否固定此列的宽度（true代表固定，false或’’代表不固定），当设置固定时，宽度为当前设置的width属性值，若未设置，则默认为200，
+									// 此属性在配置项中开启自适应属性设置才有效
+		// minWidth: 300,		// 最小宽度，多数情况是在自适应时，设置使用
+		// maxWidth: 300			// 最大宽度，多数情况是在自适应时，设置使用
+
+	},
+	{
+		headerName: 'Model',
+		field: 'age',
+		width:200,
+		filter: 'k2FilterSearch' // k2FilterSearch为此插件根据k2项目自己集合的一个filter功能,参数类型（BOOLEAN,DOUBLE），仅供参考
+	},
+	{
+		headerName: 'Price',
+		field: 'country',
+		width:300,
+		filter: 'k2FilterType' // k2FilterType为此插件根据k2项目自己集合的一个filer功能，仅供参考
+	},
+	{
+		headerName: 'detail',
+		field: 'country',
+		width:300
+	},
+	{
+		headerName: 'setting',
+		field: 'country',
+		width:300,
+		filter: false
+	}
+];
+// var tableData = [
+// 	  {make: "Toyota", model: "Celia", price: 35000}, //if field don't match data, the preview will not show data
+// 	  {make: "Ford", model: "Monde", price: 20000},
+// 	  {make: "Porsche", model: "Boxter", price: 72000}
+// 	];
+
+var tableData = 'js/testData.json'
+
+function tableRowClick (e) {
+	console.log(e);
+}
+var sss = '';
+// 配置文件列表，请按规则填写配置项。
+var configList = {
+	targetDiv: targetDiv, // 必填项 ，此为表格要显示的位置
+	tableHeader: tableHeader,// 必填项，表头显示文件
+	tableData: tableData, // 必填项， 表格数据
+	tablePaging: true, // 是否开启分页模式
+	tablePageNum: [50, 10, 20], // 是否底部页数选择模式 , 数组第一项为默认被选中的项
+	tableTopNum: 'right', // 是否顶部分页显示 'left, right, middle'
+	tableFilter: true, // 是否开启表格过滤模式
+	tableSort: true,  // 是否开启表格排序模式
+	tableCheckBox: true, //设置表格可根据checkbox进行选择 true 为开启模式，false或是 ''或是未设置为关闭模式，只能在第一列设置
+	tableColumId: 'ID', // 是否开启ID显示模式(value必须为字符串，当设置为空时，则会默认显示‘序号’，如不为空，则表头显示设置的value)
+	tableRowSelect: 'more', // 行选择模式，one为单选，more为多选 ,设置为空值时不启用行选择模式
+	tableRowClick:function (params) {tableRowClick(params)}, // 此项为表格行单击事件， 可自己定义单击后执行的事件
+	tableResize: true // 设置true则为开启自适应，并且所有列都不固定;设置为false或是‘’或没有此属性，则为关闭;[]中的子项为固定列的名字
+};
+
+agTable(configList);// 生成表格
+setTimeout(pageNumBtn, 500);
+
+</script>
+</body>
+</html>
