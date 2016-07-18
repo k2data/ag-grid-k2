@@ -19,6 +19,7 @@ import 'ag-grid-k2.css'
 ##具体使用方法
 可参考项目中的实例。
 eg:
+```javascript
 var targetDiv = document.querySelector('#tableDiv');
 var tableHeader = [
     {
@@ -76,6 +77,7 @@ var configList = {
 };
 
  agTable(configList);//生成表格
+```
 
 # ***后续
 此为第一版，后续仍在优化，并根据实际项目进行功能的添加，大家也可一起进行更新，谢谢！！
