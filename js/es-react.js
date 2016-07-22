@@ -468,6 +468,16 @@
 		if (opts.tableSort) {
 			gridOptions.enableSorting = true;
 		}
+
+		if (opts.tableRowSelectionChanged) {
+			if (typeof opts.tableRowSelectionChanged === 'function') {
+				gridOptions.onSelectionChanged = function () {
+					opts.tableRowSelectionChanged(gridOptions)
+				}
+			} else {
+				console.error('tableRowSelectionChanged: 请设置value为执行函数！！');
+			}
+		}
 		// 改变没也显示多少条数的下拉框插件
 		function addPageNumBox () {
 			if (opts.tablePageNum) {

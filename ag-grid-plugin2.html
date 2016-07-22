@@ -53,6 +53,18 @@ var EventUtil = { // 绑定event的通用函数
 		}
 	};
 
+	function onSelectionChanged(gridOptions) {
+	    var selectedRows = gridOptions.api.getSelectedRows();
+	    var selectedRowsString = '';
+	    selectedRows.forEach( function(selectedRow, index) {
+	        if (index!=0) {
+	            selectedRowsString += ', ';
+	        }
+	        selectedRowsString += selectedRow.athlete;
+	    });
+	    // document.querySelector('#selectedRows').innerHTML = selectedRowsString;
+	    console.log(selectedRowsString)
+	}
 
 
 function pageNumBtn () {
@@ -179,7 +191,7 @@ var tableHeader = [
 var tableData = 'js/testData.json'
 
 function tableRowClick (e) {
-	console.log(e);
+	// console.log(e);
 }
 var sss = '';
 // 配置文件列表，请按规则填写配置项。
@@ -196,7 +208,8 @@ var configList = {
 	tableColumId: 'ID', // 是否开启ID显示模式(value必须为字符串，当设置为空时，则会默认显示‘序号’，如不为空，则表头显示设置的value)
 	tableRowSelect: 'more', // 行选择模式，one为单选，more为多选 ,设置为空值时不启用行选择模式
 	tableRowClick:function (params) {tableRowClick(params)}, // 此项为表格行单击事件， 可自己定义单击后执行的事件
-	tableResize: true // 设置true则为开启自适应，并且所有列都不固定;设置为false或是‘’或没有此属性，则为关闭;[]中的子项为固定列的名字
+	tableResize: true, // 设置true则为开启自适应，并且所有列都不固定;设置为false或是‘’或没有此属性，则为关闭;[]中的子项为固定列的名字
+	tableRowSelectionChanged: onSelectionChanged // 设置行选择后的回调函数
 };
 
 agTable(configList);// 生成表格

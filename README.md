@@ -2,11 +2,11 @@
 针对于k2中的cosnole项目创建的一个ag-grid插件
 更加方便的让大家在项目中使用ag-grid插件去创建一个表格进行展示数据
 
-#使用方法 
+#使用方法
 ##js项目
 js或是jq项目，可根据普通的项目使用script标签引入此插件，并且为先引入ag-grid后引入此插件
 并且将此插件配套的css文件引入，
-具体的ag-grid插件 大家可使用k2data中的ag-grid项目的ag-grid.js 
+具体的ag-grid插件 大家可使用k2data中的ag-grid项目的ag-grid.js
 url ： https://github.com/k2data/ag-grid.git
 ## react 项目
 将es-react.js和ag-grid-k2.css放到项目文件夹中，
@@ -59,6 +59,17 @@ var tableHeader = [
         filter: false
     }
 ];
+function onSelectionChanged(gridOptions) {
+    var selectedRows = gridOptions.api.getSelectedRows();
+    var selectedRowsString = '';
+    selectedRows.forEach( function(selectedRow, index) {
+        if (index!=0) {
+            selectedRowsString += ', ';
+        }
+        selectedRowsString += selectedRow.athlete;
+    });
+    console.log(selectedRowsString)
+}
 var tableData = 'src/testData.json'
 var configList = {
     targetDiv: targetDiv, // 必填项 ，此为表格要显示的位置
@@ -73,7 +84,8 @@ var configList = {
     tableColumId: 'ID', // 是否开启ID显示模式(value必须为字符串，当设置为空时，则会默认显示‘序号’，如不为空，则表头显示设置的value)
     tableRowSelect: 'more', // 行选择模式，one为单选，more为多选 ,设置为空值时不启用行选择模式
     // tableRowClick:function (params) {tableRowClick(params)}, // 此项为表格行单击事件， 可自己定义单击后执行的事件
-    tableResize: true // 设置true则为开启自适应，并且所有列都不固定;设置为false或是‘’或没有此属性，则为关闭;[]中的子项为固定列的名字
+    tableResize: true, // 设置true则为开启自适应，并且所有列都不固定;设置为false或是‘’或没有此属性，则为关闭;[]中的子项为固定列的名字
+  	tableRowSelectionChanged: onSelectionChanged // 设置行选择后的回调函数
 };
 
  agTable(configList);//生成表格
