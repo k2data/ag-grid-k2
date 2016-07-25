@@ -7,7 +7,7 @@
 	var agGrids
 	if (typeof exports === 'object' && typeof module !== 'undefined') {
 		agGrids = require('ag-grid');
-		require('./ag-grid-k2.css');
+		require('../css/ag-grid-k2.css');
 	} else {
 		agGrids = agGrid
 	}
