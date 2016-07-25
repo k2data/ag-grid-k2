@@ -10,7 +10,7 @@
 <body>
 <div id="tabBody" class="ag-fresh" style="height: 600px"></div>
 
-<div class="ag-paging-num-box" style="margin-top:40px;" id="numberPageBox">
+<!-- <div class="ag-paging-num-box" style="margin-top:40px;" id="numberPageBox">
 	<div class="ag-paging-num-btn">
 		<button type="button" id="PagingNumFirstBtn"><<</button>
 		<button type="button" id="PagingNumPreBtn"><</button>
@@ -29,7 +29,7 @@
 		<button type="button" id="PagingNumNextBtn">></button>
 		<button type="button" id="PagingNumLastBtn">>></button>
 	</div>
-</div>
+</div> -->  <!--测试代码，后期使用-->
 <script type="text/javascript">
 var EventUtil = { // 绑定event的通用函数
 		addHandler: function (element, type, handler) {
@@ -182,14 +182,71 @@ var tableHeader = [
 		filter: false
 	}
 ];
-// var tableData = [
-// 	  {make: "Toyota", model: "Celia", price: 35000}, //if field don't match data, the preview will not show data
-// 	  {make: "Ford", model: "Monde", price: 20000},
-// 	  {make: "Porsche", model: "Boxter", price: 72000}
-// 	];
 
-var tableData = 'js/testData.json'
+var Url = 'js/testData.json';
+function doData(data) {
+	var currentData = {};
+	for (let i = 0, len = data.length; i < len; i++) {
+		if (data[i].country.indexOf('States') !== -1) {
+			data[i].country = 'ZYDTest';
+		}
+	}
+	currentData.data = data;
+	currentData.total = data.length;
+	return currentData;
+}
+// var sss = fetchData();
+// console.log(sss);
+// var tableData = {
+// 	url: 'js/testData.json',
+// 	showModel: 'page', // all or page 若为page的话，配置项必须设置分页模式。
+// 	dataDeal:
+// }
 
+var tableData = {
+	local:'', // 必须是true或是false的布尔值，true代表本地数据，false或是空代表远程数据
+	data: ['size','page',Url,doData]// 此为远程数据的格式，也就是local字段为false或是空时，本地数据格式应该是数组
+}
+
+// var tableData = 'js/testData.json' // 不通过后台进行分页时可使用
+//
+// var tableHeader = [
+// 	{headerName: '项目名称', field: 'projectName', width: 180},
+// 	{headerName: '分析类型', field: 'analysisType', width: 180},
+// 	{headerName: '项目描述', field: 'description'}
+// ];
+//
+// var tableData = {  // 本地数据显示
+// 	local: true,
+// 	data: [
+//     {projectName: 'MyProject1', analysisType: '抽取', description: '项目描述信息'},
+//     {projectName: 'MyProject2', analysisType: '预处理', description: '项目描述信息'},
+//     {projectName: 'MyProject3', analysisType: '训练', description: '项目描述信息'},
+//     {projectName: 'MyProject4', analysisType: '评分', description: '项目描述信息'},
+//     {projectName: 'MyProject5', analysisType: '抽取', description: '项目描述信息'},
+//     {projectName: 'MyProject6', analysisType: '预处理', description: '项目描述信息'},
+//     {projectName: 'MyProject7', analysisType: '训练', description: '项目描述信息'},
+//     {projectName: 'MyProject8', analysisType: '评分', description: '项目描述信息'},
+//     {projectName: 'MyProject9', analysisType: '抽取', description: '项目描述信息'},
+//     {projectName: 'MyProject30', analysisType: '预处理', description: '项目描述信息'},
+//     {projectName: 'MyProject31', analysisType: '训练', description: '项目描述信息'},
+//     {projectName: 'MyProject32', analysisType: '评分', description: '项目描述信息'},
+//     {projectName: 'MyProject33', analysisType: '抽取', description: '项目描述信息'},
+//     {projectName: 'MyProject34', analysisType: '预处理', description: '项目描述信息'},
+//     {projectName: 'MyProject35', analysisType: '训练', description: '项目描述信息'}
+// ]}
+
+// var tableHeader = [
+// 	{headerName: '项目ID', field: 'id'},
+// 	{headerName: '项目名称', field: 'projName'},
+// 	{headerName: '开发者', field: 'owner'},
+// 	{headerName: '创建者', field: 'creator'},
+// 	{headerName: '创建时间', field: 'createTime'},
+// 	{headerName: '更新时间', field: 'updateTime'},
+// 	{headerName: '项目描述', field: 'description'},
+// 	{headerName: '项目信息', field: 'projectConf'}
+// ];
+// var tableData = 'js/data.json'
 function tableRowClick (e) {
 	// console.log(e);
 }
@@ -213,7 +270,10 @@ var configList = {
 };
 
 agTable(configList);// 生成表格
-setTimeout(pageNumBtn, 500);
+
+var grid = agTable.agGrid;// 此为agTable的agGrid属性，方便在项目中自己去调用GridApi
+console.log(grid);
+// setTimeout(pageNumBtn, 500);
 
 </script>
 </body>

@@ -490,12 +490,20 @@
 
 					selectedNum = opts.tablePageNum[0];
 					pageNumArr = opts.tablePageNum.sort();
-					pageNumTemp = '<select id="pageNumChange">' +
-								    '</select>' +
-								    '&nbsp;条/页' +
-								    '&nbsp;&nbsp;&nbsp;共<span id="pageNumChangeTotal"></span>条';
+					pageNumTemp = '<div class="ag-page-size">' +
+													'<select id="pageNumChange">' +
+											    '</select>' +
+													'<label class="select-arrow" for="onChangeVal" id="forChangeBox">' +
+													'<svg width="22px" height="20px" version="1.1" fill="#656D78">' +
+													'<path d="M7 8 L 10 13 L 13 8 Z"></path></svg>' +
+													'</label>' +
+												'</div>'+
+										    '&nbsp;条/页' +
+										    '&nbsp;&nbsp;&nbsp;共<span id="pageNumChangeTotal"></span>条';
 					pageNumDiv.innerHTML = pageNumTemp;
 					pageNumDiv.style.margin = '5px 0 0 0';
+					pageNumDiv.style.lineHeight = '20px';
+					pageNumDiv.style.color = '#666';
 					selectNum = pageNumDiv.getElementsByTagName('select')[0];
 
 					// set pagenum change box
@@ -530,7 +538,7 @@
 
 				topPageNum.style.width = '100%';
 				topPageNum.style.height = '30px';
-				topPageNumBtn = '<div id="k2TopNum" style="height:100%;width:auto">' +
+				topPageNumBtn = '<div id="k2TopNum" style="height:100%;width:auto;color:#666">' +
 									'<button id="topNumBtnPre" class="ag-paging-button">'+previousIcon+'</button>' +
 										'<span id="k2CurrentNum">1</span>/<span id="k2TotalNum">...</span>' +
 									'<button id="topNumBtnNext" class="ag-paging-button">'+nextIcon+'</button>' +
@@ -631,8 +639,83 @@
 		//判断数据是本地test数据还是远程URl数据
 		switch (typeof opts.tableData) {
 			case 'object':
-				gridOptions.rowData = opts.tableData;
-				ajaxState = false;
+				// if (opts.tableData instanceof Array) {
+				// 	if (opts.tablePaging) {
+				// 		// console.log(gridOptions);
+				// 		// console.log(opts.tableData instanceof Array);
+				// 		// setRowData(opts.tableData);
+				// 		setTimeout(function(){
+				// 			addTabRowClick();//行单击事件
+				// 			allSelectModel();// 行全选事件
+				// 			addPageNumBox(); //是否添加页数控制器
+				// 			addTopNum(); // 是否添加顶部页码控制
+				// 			sizeToFit();
+				// 			setRowData(opts.tableData);
+				// 		}, 500)
+				//
+				// 	} else {
+				// 		gridOptions.rowData = opts.tableData;
+				// 		setTimeout(function () {
+				// 			sizeToFit();
+				// 			allSelectModel();// 行全选事件
+				// 		}, 500);
+				// 	}
+				// 	ajaxState = false;
+				// } else {
+				// 	ajaxState = true;
+				// }
+				// console.log('loacl');
+
+				// opts.tableData.local?
+				// console.log(opts.tableData) :
+				// (
+				// console.error('tableData:please input correct!!')
+				// )
+				if (opts.tableData.local) {
+					if (typeof opts.tableData.local === 'boolean') { //判断local字段是否是布尔类型
+						// 当为本地数据时，判断数据格式是否正确(不能是远程数据的格式)
+						if (opts.tableData.data instanceof Array) {
+							for (let i = 0, len = opts.tableData.data.length; i < len; i++) {
+								if (typeof opts.tableData.data[i] !== 'object') {
+									console.error('tableData.data: please input correct data!');
+									return;
+								}
+							}
+
+							if (opts.tablePaging) {
+								setTimeout(function(){
+									addTabRowClick();//行单击事件
+									allSelectModel();// 行全选事件
+									addPageNumBox(); //是否添加页数控制器
+									addTopNum(); // 是否添加顶部页码控制
+									sizeToFit();
+									setRowData(opts.tableData.data);
+								}, 500)
+
+							} else {
+								gridOptions.rowData = opts.tableData.data;
+								setTimeout(function () {
+									sizeToFit();
+									allSelectModel();// 行全选事件
+								}, 500);
+							}
+							ajaxState = false;
+						} else {
+							console.error('tableData.data: must be array!!');
+							return;
+						}
+					} else {
+						console.error('tableData.local: please input boolean type!!');
+						return;
+					}
+				} else {
+					if (opts.tableData.data instanceof Array) {
+						ajaxState = true;
+					} else {
+						console.error('tableData.data: must be array!!');
+						return;
+					}
+				}
 				break;
 			case 'string':
 				gridOptions.rowData = null;
@@ -694,9 +777,23 @@
 		 	EventUtil.addHandler(pageNumChange, 'change', function (e) {
 			    pageSize = new Number(this.value);
 			    createNewDatasource();
+					if (!opts.tableData.local) {
+						ajaxPaging(opts.tableData.data[2]);
+					}
 		 	});
 		}
-
+		// 自适应事件
+		function sizeToFit() {
+			if (opts.tableResize) {
+				gridOptions.api.addEventListener('modelUpdated', function () {
+					gridOptions.api.sizeColumnsToFit();
+				});
+				EventUtil.addHandler(window, 'resize', function () {
+					gridOptions.api.sizeColumnsToFit();
+				})
+			}
+			// 自适应以后开启sizeColumnsToFit API属性,将此写于此处防止数据加载时间太长，导致首次加载不能自适应的bug
+		}
 		// 分页模式下使用, 创建数据源
 		function createNewDatasource() {
 		    if (!allOfTheData) {
@@ -706,28 +803,89 @@
 		    var dataSource = {
 		        pageSize: pageSize, // 设置每页显示条数
 		        getRows: function (params) {
-		        	var k2TotalNum, total, pageNumChangeTotal;
+		        		var k2TotalNum, total, pageNumChangeTotal;
 		            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-		            setTimeout( function() {
+								console.log('my test');
+                var rowsThisPage = allOfTheData.slice(params.startRow, params.endRow);
+                var lastRow = -1;
 
-		                var rowsThisPage = allOfTheData.slice(params.startRow, params.endRow);
-		                var lastRow = -1;
+                lastRow = allOfTheData.length;
+                params.successCallback(rowsThisPage, lastRow);
+                k2TotalNum = document.querySelector('#k2TotalNum');
+                pageNumChangeTotal = document.querySelector('#pageNumChangeTotal');
+                total = document.querySelector('#total').innerHTML;
+                if (k2TotalNum) {
+                	k2TotalNum.innerHTML = total ;
+                }
+								if (pageNumChangeTotal) {
+									pageNumChangeTotal.innerHTML = total;
+								}
+		        }
+		    };
+				// console.log(gridOptions)
+		    gridOptions.api.setDatasource(dataSource);
+		}
 
-		                lastRow = allOfTheData.length;
-		                params.successCallback(rowsThisPage, lastRow);
-		                k2TotalNum = document.querySelector('#k2TotalNum');
-		                pageNumChangeTotal = document.querySelector('#pageNumChangeTotal');
-		                total = document.querySelector('#total').innerHTML;
-		                if (k2TotalNum) {
-		                	k2TotalNum.innerHTML = total ;
-		                }
-		                pageNumChangeTotal.innerHTML = total;
-		            }, 500);
+
+		// 介于不是全部加载所有数据，针对url进行分页的情况
+		function ajaxPaging(url) {
+		    if (!url) {
+		        return;
+		    }
+
+		    var dataSource = {
+		        pageSize: pageSize, // 设置每页显示条数
+		        getRows: function (params) {
+		        		var k2TotalNum, total, totalNum, pageNumChangeTotal, allOfTheData, splitO;
+		            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+								url.indexOf('?') === -1 ? splitO = '?' : splitO = ''
+								let URL = url + splitO + 'size='+pageSize+'' + '&' + 'page=' + params.endRow / pageSize;
+								console.log(URL);
+
+								fetch (URL)
+								.then (function (response) {
+							    if (response.status !== 200) {
+							      console.log('存在问题，状态码:' + response.status)
+							      biu('服务器异常！', {type: 'danger', timeout: 10000})
+							      return
+							    }
+							    return response.json()
+							  })
+								.then (function (data) {
+									if (data == null) {
+							      return;
+							    }
+									allOfTheData = opts.tableData.data[3](data).data;
+									total = opts.tableData.data[3](data).total;
+								})
+								.then (function () {
+									if (!allOfTheData) {
+										return;
+									}
+									var rowsThisPage = allOfTheData.slice(params.startRow, params.endRow);
+									var lastRow = -1;
+
+									// lastRow = allOfTheData.length;
+									lastRow = total;
+									params.successCallback(rowsThisPage, lastRow);
+									document.querySelector('#k2CurrentNum').innerHTML = document.querySelector('#current').value;
+									k2TotalNum = document.querySelector('#k2TotalNum');
+									pageNumChangeTotal = document.querySelector('#pageNumChangeTotal');
+									totalNum = document.querySelector('#total').innerHTML;
+									if (k2TotalNum) {
+										k2TotalNum.innerHTML = totalNum ;
+									}
+									if (pageNumChangeTotal) {
+										pageNumChangeTotal.innerHTML = totalNum;
+									}
+								})
+								.catch (function (err) {
+									console.error('Fetch Err:' + err);
+									params.failCallback(err);
+								})
 		        }
 		    };
 		    gridOptions.api.setDatasource(dataSource);
-				addTabRowClick();//行单击事件
-				allSelectModel();// 行全选事件
 		}
 
 		function setRowData(rowData) {
@@ -736,7 +894,7 @@
 		}
 
 
-		// 后台远程获取数据
+		// 后台远程获取数据全部都加载的情况，让ag-grid自己进行分页
 		function ajaxData(url) {
 		  // if ajax data
 		  var httpRequest = new XMLHttpRequest();
@@ -745,35 +903,69 @@
 			  httpRequest.onreadystatechange = function() {
 	             if (httpRequest.readyState == 4 && httpRequest.status == 200) {
 		             var httpResponse = JSON.parse(httpRequest.responseText);
-		             console.log(1);
+		            //  console.log(httpResponse);
 		              if (opts.tablePaging) {
+										addTabRowClick();//行单击事件
+										allSelectModel();// 行全选事件
+										addPageNumBox(); //是否添加页数控制器
+										addTopNum(); // 是否添加顶部页码控制
 		              	setRowData(httpResponse); //分页模式
-		              	addPageNumBox(); //是否添加页数控制器
-						addTopNum(); // 是否添加顶部页码控制
 		              } else {
 		              	gridOptions.api.setRowData(httpResponse); // 非分页模式
+										addTabRowClick();//行单击事件
+										allSelectModel();// 行全选事件
+										sizeToFit();
 		              }
 	            }
 		      };
+		  // if ()
+		  // ajaxPaging(url);
 		};
 
 		// window.addEventListener("resize", function(){
 		  	new agGrids.Grid(opts.targetDiv, gridOptions);// 创建表格
 			if (ajaxState) {
-				ajaxData(opts.tableData);
-				// 自适应以后开启sizeColumnsToFit API属性,将此写于此处防止数据加载时间太长，导致首次加载不能自适应的bug
-				if (opts.tableResize) {
-					gridOptions.api.addEventListener('modelUpdated', function () {
-						gridOptions.api.sizeColumnsToFit();
-					});
-					EventUtil.addHandler(window, 'resize', function () {
-						gridOptions.api.sizeColumnsToFit();
-					})
+				sizeToFit();
+				if (typeof opts.tableData === 'string') {
+					ajaxData(opts.tableData);
+				} else if (typeof opts.tableData === 'object') {
+					if(opts.tableData.data) {
+
+						if (opts.tableData.data.length === 4) {
+							// 判断数据格式的正确性（防止在远程数据出现本地数据的格式)
+							for (let i = 0, len = opts.tableData.data.length; i < len; i++) {
+								if (typeof opts.tableData.data[i] === 'object' || typeof opts.tableData.data[3] !== 'function') {
+									console.error('tableData.data: please input correct data!!');
+									return;
+								}
+							}
+							if (opts.tablePaging) {
+								addTabRowClick();//行单击事件
+								allSelectModel();// 行全选事件
+								addPageNumBox(); //是否添加页数控制器
+								addTopNum(); // 是否添加顶部页码控制
+								ajaxPaging(opts.tableData.data[2]);
+							} else {
+								console.error('warning: 在此tableData的情况下，必须设置分页模式，'
+								 + '若不想设置分页模式，则直接将tableData设置成URL即可'
+								);
+							}
+
+						} else {
+							console.error('tableData.data: please input correct data type!!');
+							return;
+						}
+					} else {
+						ajaxData(opts.tableData.url);
+					}
 				}
 			}
 
 		// });
 	}
+	// var GrApi = gridOptions;
+	agTable.agGrid = agGrids;
+	// console.log(agTable.agGrid);
 	return agTable;
 })
 ;
