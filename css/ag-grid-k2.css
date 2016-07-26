@@ -163,7 +163,8 @@
   z-index: 1;
 }
 .ag-paging-page-summary-panel{
-	color: #666;
+  float: right;
+  color: #666;
 }
 .ag-paging-page-summary-panel input {
   border-radius: 3px;
