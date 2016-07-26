@@ -976,7 +976,7 @@
       }
     }
 
-    return grid;
+    return gridOptions;
   }
 
   return agTable;
