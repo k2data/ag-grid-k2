@@ -839,7 +839,7 @@
 		        		var k2TotalNum, total, totalNum, pageNumChangeTotal, allOfTheData, splitO;
 		            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
 								url.indexOf('?') === -1 ? splitO = '?' : splitO = ''
-								let URL = url + splitO + 'size='+pageSize+'' + '&' + 'page=' + params.endRow / pageSize;
+								let URL = url + splitO + ''+opts.tableData.data[0]+'='+pageSize+'' + '&' + ''+opts.tableData.data[1]+'=' + params.endRow / pageSize;
 								console.log(URL);
 
 								fetch (URL)
