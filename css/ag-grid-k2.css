@@ -94,7 +94,7 @@
   border-right: 1px dotted #a9a9a9!important;
 }
 .ag-fresh .ag-row:hover {
-  background-color: #e3f8ff !important;
+background-color: #e3f8ff !important;
 }
 .ag-fresh .ag-header-cell-menu-button {
   border: none;
@@ -111,8 +111,9 @@
 .ag-paging-button {
   color: #666;
 }
-.ag-paging-button:disabled {
-  color: lighten(#666, 30%);
+.ag-fresh .ag-paging-button:disabled {
+  opacity: 0.7;
+	cursor: default;
 }
 .ag-paging-button {
   border: none;
@@ -362,3 +363,12 @@
   top: -30px;
   right: 0;
 }
+.page-svg-icon{
+	fill: #666;
+}
+.page-svg-icon line {
+	stroke: #666;
+}
+/*.ag-fresh .ag-paging-button:disabled .page-svg-icon line{
+	stroke: lighten(#666, 30%);
+}*/
