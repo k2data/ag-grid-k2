@@ -110,7 +110,7 @@ border: 1px solid rgba(0,0,0,0)!important;
 border-right: 1px dotted #a9a9a9!important;
 }
 .ag-fresh .ag-row:hover {
-background-color: $highlight-color-row !important;
+background-color: #e3f8ff !important;
 }
 
 .ag-fresh .ag-header-cell-menu-button {
@@ -131,7 +131,8 @@ cursor: pointer;
 background-color: #e6e6e6;
 }
 .ag-fresh .ag-paging-button:disabled {
-  color: lighten(#666, 30%);
+  opacity: 0.7;
+	cursor: default;
 }
 .ag-page-size{
 width: 45px;
@@ -353,3 +354,12 @@ background-size: cover;
 	border-radius: 3px;
 	cursor: pointer;
 }
+.page-svg-icon{
+	fill: #666;
+}
+.page-svg-icon line {
+	stroke: #666;
+}
+/*.ag-fresh .ag-paging-button:disabled .page-svg-icon line{
+	stroke: lighten(#666, 30%);
+}*/

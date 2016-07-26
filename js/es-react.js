@@ -373,7 +373,7 @@
 
 
 		// mine icon
-		var nextIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+		var nextIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
 							 '<g>' +
 							  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
 							 ' <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
@@ -385,7 +385,7 @@
 							  '<line transform="rotate(90.17411041259766 6.24998140335083,4.031386375427245) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="6.59371" x2="3.62516" y1="1.46906" x1="8.8748" stroke-width="1.5" stroke="#000" fill="none"/>' +
 							 '</g>' +
 							'</svg>';
-		var lastIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+		var lastIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
 						 '<g>' +
 						 ' <rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
 						  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
@@ -399,7 +399,7 @@
 						  '<line transform="rotate(90.17411041259766 8.062356948852539,4.031385421752929) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="5.43754" y1="1.46906" x1="10.68717" stroke-width="1.5" stroke="#000" fill="none"/>' +
 						 '</g>' +
 						'</svg>';
-		var firstIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+		var firstIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
 						 '<g>' +
 						  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
 						  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
@@ -413,7 +413,7 @@
 						  '<line transform="rotate(180 7.999861240386963,4.031385421752931) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="5.37504" y1="1.46906" x1="10.62468" stroke-width="1.5" stroke="#000" fill="none"/>' +
 						 '</g>' +
 						'</svg>';
-		var previousIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+		var previousIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
 							 '<g>' +
 							  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
 							  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
@@ -426,10 +426,10 @@
 							 '</g>' +
 							'</svg>';
 		var secDownIcon = '<svg width="12px" height="12px" version="1.1" xmlns="http://www.w3.org/2000/svg"' +
-	      'fill="#656D78"><path d="M1 4 L 6 10 L 11 4 Z"/>' +
+	      'fill="#656D78" class="page-svg-icon"><path d="M1 4 L 6 10 L 11 4 Z"/>' +
 	      '</svg>'
 	    var secUpIcon = '<svg width="12px" height="12px" version="1.1" xmlns="http://www.w3.org/2000/svg"' +
-	      'fill="#656D78"><path d="M1 9 L 6 3 L 11 9 Z"/></svg>'
+	      'fill="#656D78" class="page-svg-icon"><path d="M1 9 L 6 3 L 11 9 Z"/></svg>'
 
 		gridOptions = {
 		  columnDefs: columnDefs,
