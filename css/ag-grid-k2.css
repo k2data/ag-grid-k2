@@ -357,3 +357,7 @@
   border-radius: 3px;
   cursor: pointer;
 }
+.k2-top-page-nav {
+  position: absolute;
+  top: -30px;
+}
