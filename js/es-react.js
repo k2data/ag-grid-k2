@@ -924,49 +924,47 @@
 		};
 
 		// window.addEventListener("resize", function(){
-		  	new agGrids.Grid(opts.targetDiv, gridOptions);// 创建表格
-			if (ajaxState) {
-				sizeToFit();
-				if (typeof opts.tableData === 'string') {
-					ajaxData(opts.tableData);
-				} else if (typeof opts.tableData === 'object') {
-					if(opts.tableData.data) {
+	  var grid = new agGrids.Grid(opts.targetDiv, gridOptions);// 创建表格
+		if (ajaxState) {
+			sizeToFit();
+			if (typeof opts.tableData === 'string') {
+				ajaxData(opts.tableData);
+			} else if (typeof opts.tableData === 'object') {
+				if(opts.tableData.data) {
 
-						if (opts.tableData.data.length === 4) {
-							// 判断数据格式的正确性（防止在远程数据出现本地数据的格式)
-							for (let i = 0, len = opts.tableData.data.length; i < len; i++) {
-								if (typeof opts.tableData.data[i] === 'object' || typeof opts.tableData.data[3] !== 'function') {
-									console.error('tableData.data: please input correct data!!');
-									return;
-								}
+					if (opts.tableData.data.length === 4) {
+						// 判断数据格式的正确性（防止在远程数据出现本地数据的格式)
+						for (let i = 0, len = opts.tableData.data.length; i < len; i++) {
+							if (typeof opts.tableData.data[i] === 'object' || typeof opts.tableData.data[3] !== 'function') {
+								console.error('tableData.data: please input correct data!!');
+								return;
 							}
-							if (opts.tablePaging) {
-								addTabRowClick();//行单击事件
-								allSelectModel();// 行全选事件
-								addPageNumBox(); //是否添加页数控制器
-								addTopNum(); // 是否添加顶部页码控制
-								ajaxPaging(opts.tableData.data[2]);
-							} else {
-								console.error('warning: 在此tableData的情况下，必须设置分页模式，'
-								 + '若不想设置分页模式，则直接将tableData设置成URL即可'
-								);
-							}
-
-						} else {
-							console.error('tableData.data: please input correct data type!!');
-							return;
 						}
+						if (opts.tablePaging) {
+							addTabRowClick();//行单击事件
+							allSelectModel();// 行全选事件
+							addPageNumBox(); //是否添加页数控制器
+							addTopNum(); // 是否添加顶部页码控制
+							ajaxPaging(opts.tableData.data[2]);
+						} else {
+							console.error('warning: 在此tableData的情况下，必须设置分页模式，'
+							 + '若不想设置分页模式，则直接将tableData设置成URL即可'
+							);
+						}
+
 					} else {
-						ajaxData(opts.tableData.url);
+						console.error('tableData.data: please input correct data type!!');
+						return;
 					}
+				} else {
+					ajaxData(opts.tableData.url);
 				}
 			}
+		}
 
-		// });
+		return grid;
 	}
-	// var GrApi = gridOptions;
-	agTable.agGrid = agGrids;
-	// console.log(agTable.agGrid);
+
 	return agTable;
 })
 ;
