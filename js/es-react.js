@@ -538,6 +538,7 @@
 
 				topPageNum.style.width = '100%';
 				topPageNum.style.height = '30px';
+        topPageNum.classList.add('k2-top-page-nav');
 				topPageNumBtn = '<div id="k2TopNum" style="height:100%;width:auto;color:#666">' +
 									'<button id="topNumBtnPre" class="ag-paging-button">'+previousIcon+'</button>' +
 										'<span id="k2CurrentNum">1</span>/<span id="k2TotalNum">...</span>' +
