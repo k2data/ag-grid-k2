@@ -536,8 +536,8 @@
 				var topPageNumBtn, topNumBtnPre, topNumBtnNext, btNext, btPrevious, current, k2CurrentNum, btFirst, btLast;
 				var reg = /^\+?[1-9][0-9]*$/;
 
-				topPageNum.style.width = '100%';
-				topPageNum.style.height = '30px';
+				//topPageNum.style.width = '100%';
+				//topPageNum.style.height = '30px';
         topPageNum.classList.add('k2-top-page-nav');
 				topPageNumBtn = '<div id="k2TopNum" style="height:100%;width:auto;color:#666">' +
 									'<button id="topNumBtnPre" class="ag-paging-button">'+previousIcon+'</button>' +
