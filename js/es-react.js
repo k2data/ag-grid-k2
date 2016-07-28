@@ -1,554 +1,547 @@
 ;
-(function(global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global.agTable = factory());
-})(this, function() {
-  var agGrids
-  if (typeof exports === 'object' && typeof module !== 'undefined') {
-    agGrids = require('ag-grid');
-    require('../css/ag-grid-k2.css');
-  } else {
-    agGrids = agGrid
-  }
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	  typeof define === 'function' && define.amd ? define(factory) :
+	  (global.agTable = factory());
+})(this, function () {
+	var agGrids
+	if (typeof exports === 'object' && typeof module !== 'undefined') {
+		agGrids = require('ag-grid');
+		require('../css/ag-grid-k2.css');
+	} else {
+		agGrids = agGrid
+	}
+	function agTable(opts) {
+		if (typeof opts === 'object') {
+			var columnDefs = [];
+			var gridOptions;
+			var tabH = opts.tableHeader;
+			var EventUtil = { // 绑定event的通用函数
+					addHandler: function (element, type, handler) {
+						if (element.addEventListener) {
+							element.addEventListener(type, handler, false);
+						} else if (element.attachEvent) {
+							element.attachEvent('on' + type, handler);
+						} else {
+							element['on' + type] = handler;
+						}
+					},
 
-  function agTable(opts) {
-    if (typeof opts === 'object') {
-      var columnDefs = [];
-      var gridOptions;
-      var tabH = opts.tableHeader;
-      var EventUtil = { // 绑定event的通用函数
-        addHandler: function(element, type, handler) {
-          if (element.addEventListener) {
-            element.addEventListener(type, handler, false);
-          } else if (element.attachEvent) {
-            element.attachEvent('on' + type, handler);
-          } else {
-            element['on' + type] = handler;
-          }
-        },
-
-        removeHandler: function(element, type, handler) {
-          if (element.removeEventListener) {
-            element.removeEventListener(type, handler, false);
-          } else if (element.detachEvent) {
-            element.detachEvent('on' + type, handler);
-          } else {
-            element['on' + type] = null;
-          }
-        }
-      };
-
-
-      for (var i = 0, len = tabH.length; i < len; i++) {
-        var columnJson = {};
-        columnJson.headerName = tabH[i].headerName;
-        columnJson.field = tabH[i].field;
-        columnJson.width = tabH[i].width;
-        columnJson.suppressSizeToFit = tabH[i].fixed;
-        columnJson.cellStyle = tabH[i].style;
-        columnJson.cellRenderer = tabH[i].render;
-        columnJson.minWidth = tabH[i].minWidth;
-        columnJson.maxWidth = tabH[i].maxWidth;
-
-        if ('filter' in tabH[i]) {
-          if (tabH[i].filter === 'k2FilterSearch' || tabH[i].filter === 'k2FilterType') {
-            tabH[i].filter === 'k2FilterSearch' ?
-              columnJson.filter = ContainerFilterText :
-              columnJson.filter = DataTypeFilter;
-          } else if (tabH[i].filter) {
-            if (tabH[i].filter !== true) {
-              columnJson.filter = tabH[i].filter;
-            }
-          } else {
-            columnJson.suppressMenu = true;
-          }
-        }
-
-        // judge sorting model
-        if ('sorting' in tabH[i]) {
-          if (tabH[i].sorting === false) {
-            columnJson.suppressSorting = true;
-          }
-        }
-        columnDefs.push(columnJson);
-      }
-
-      //是否开启列ID显示模式
-      if ('tableColumId' in opts) {
-        if (typeof opts.tableColumId === 'string') {
-          var columnId = {
-            headerName: "序号",
-            field: "",
-            width: 45,
-            suppressSizeToFit: true,
-            suppressSorting: true,
-            suppressMenu: true,
-            cellRenderer: function(params) {
-              return params.node.id + 1
-            },
-            cellStyle: {
-              'text-align': 'center'
-            },
-            suppressSizeToFit: true
-          }
-          if (opts.tableColumId !== '') {
-            columnId.headerName = opts.tableColumId;
-          }
-          columnDefs.unshift(columnId);
-        } else {
-          console.error('tableColumId:请确保为字符串！！');
-          return;
-        }
-      }
-
-      //判断是否开启tableCheckBox模式
-      if (opts.tableCheckBox && opts.tableCheckBox === true) {
-        // columnDefs[0].checkboxSelection = true;
-        var columnCheckBox = {
-          headerName: "<input type='checkbox' name='allCheckBox' id='allCheckBox'/>",
-          field: "",
-          width: 35,
-          suppressSizeToFit: true,
-          suppressSorting: true,
-          suppressMenu: true,
-          checkboxSelection: true,
-          cellStyle: {
-            'text-align': 'center'
-          }
-        };
-        columnDefs.unshift(columnCheckBox);
-        // console.log(columnDefs);
-      }
-
-    } else {
-      console.error('配置文件为json格式数据！！');
-      return;
-    }
-
-    // 自定义的过滤器
-    function ContainerFilterText() {}
-
-    ContainerFilterText.prototype.init = function(params) {
-      this.valueGetter = params.valueGetter;
-      this.filterText = null;
-      this.setupGui(params);
-    }
-
-    // not called by ag-Grid, just for us to help setup
-    ContainerFilterText.prototype.setupGui = function(params) {
-      this.gui = document.createElement('div');
-      this.gui.innerHTML =
-        '<div style="width: auto;">' +
-        '<div style="background-color:#e0e1e2;padding-left:8px;font-size:12px;line-height:20px;' +
-        'border-bottom:1px solid #A9A9A9">查询</div>' +
-        '<div style="margin:15px 8px;white-space:nowrap">' +
-        '<input class="ag-grid-filter-input" type="text" id="filterText" placeholder="搜索..."/>' +
-        '<button class="ag-grid-filter-btn" id="filterTextSubmit">' +
-        ' <svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
-        '<g>' +
-        '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
-        ' <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
-        ' <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
-        ' </g>' +
-        ' </g>' +
-        '<g>' +
-        '<ellipse stroke="#000" ry="3.5935" rx="3.5935" id="svg_6" cy="5.03132" cx="5.03132" fill-opacity="null" stroke-opacity="null" stroke-width="2" fill="none"/>' +
-        '<line stroke-linecap="null" stroke-linejoin="null" id="svg_7" y2="10.74967" x2="10.68717" y1="7.99986" x1="7.99986" fill-opacity="null" stroke-opacity="null" stroke-width="2" stroke="#000" fill="none"/>' +
-        '</g>' +
-        '</svg>' +
-        '</button>' +
-        '<div>' +
-        '</div>';
-
-      var that = this;
-      this.filterText = this.gui.querySelector('#filterText');
-      this.eFilterText = this.gui.querySelector('#filterText');
-      this.eFilterTextSubmit = this.gui.querySelector('#filterTextSubmit');
-      this.eFilterTextSubmit.addEventListener('click', function() {
-        that.filterId = params.colDef.field;
-        console.log(params.colDef.field);
-        params.filterChangedCallback();
-      });
-      this.gui.addEventListener('keydown', function(event) {
-        if (event.keyCode === 13) {
-          that.filterId = params.colDef.field;
-          console.log(params.colDef.field);
-          params.filterChangedCallback();
-        }
-      });
-    }
-
-    ContainerFilterText.prototype.getGui = function() {
-      return this.gui;
-    }
-
-    ContainerFilterText.prototype.doesFilterPass = function(params) {
-      // make sure each word passes separately, ie search for firstname, lastname
-      var passed = true;
-      var valueGetter = this.valueGetter;
-      this.filterText.value.toLowerCase().split(' ').forEach(function(filterWord) {
-        var value = valueGetter(params);
-        if (value.toString().toLowerCase().indexOf(filterWord) < 0) {
-          passed = false;
-        }
-      })
-
-      return passed;
-    }
-
-    ContainerFilterText.prototype.isFilterActive = function() {
-      return this.filterText.value !== null && this.filterText.value !== undefined && this.filterText.value !== '';
-    }
-
-    ContainerFilterText.prototype.getApi = function() {
-      var that = this;
-      return {
-        getModel: function() {
-          var model = {
-            value: that.filterText.value,
-            id: that.filterId
-          };
-          return model;
-        },
-        setModel: function(model) {
-          that.eFilterText.value = model.value;
-          that.filterId = model.value;
-        }
-      }
-    }
-
-    // DataTypeFilter为数据类型过滤器
-    function DataTypeFilter() {}
-    DataTypeFilter.prototype.init = function(params) {
-      this.eGui = document.createElement('div');
-      this.eGui.innerHTML =
-        '<div style="display: inline-block;width:auto;font-size:12px">' +
-        '<div style="padding:0px 8px;background-color:#e0e1e2;font-size:12px;line-height:20px;' +
-        ' border-bottom:1px solid #A9A9A9">' +
-        '根据数据类型查询' +
-        '</div>' +
-        '<label style="margin: 10px;display: block;">' +
-        '  <input type="checkbox" name="dataFilter" checked="true" id="dataDouble" value="DOUBLE"' +
-        '  style="vertical-align:bottom"/> DOUBLE' +
-        '</label>' +
-        '<label style="margin: 10px;display: block;">' +
-        '  <input type="checkbox" name="dataFilter" id="dataBoolean" value="BOOLEAN" checked="true"' +
-        '  style="vertical-align:middle"/> BOOLEAN' +
-        '</label>' +
-        '</div>';
-      this.dataDouble = this.eGui.querySelector('#dataDouble');
-      this.dataBoolean = this.eGui.querySelector('#dataBoolean');
-      this.dataDouble.addEventListener('change', this.onRbChanged.bind(this));
-      this.dataBoolean.addEventListener('change', this.onRbChanged.bind(this));
-      this.filterId = params.colDef.field;
-      this.filterChangedCallback = params.filterChangedCallback;
-      // console.log(params)
-      // this.filterActive = false
-      this.valueGetter = params.valueGetter;
-    }
-
-    DataTypeFilter.prototype.onRbChanged = function() {
-      if (this.dataDouble.checked === true && this.dataBoolean.checked === true) {
-        this.filterActive = false;
-      } else {
-        this.filterActive = true;
-      }
-      this.filterChangedCallback();
-    }
-
-    DataTypeFilter.prototype.getGui = function(params) {
-      return this.eGui;
-    }
-
-    DataTypeFilter.prototype.doesFilterPass = function() {
-      // return this.dataDouble.checked !== false && this.dataBoolean.checked !== false
-    }
-
-    DataTypeFilter.prototype.isFilterActive = function() {
-      return this.filterActive;
-    }
-
-    DataTypeFilter.prototype.getApi = function() {
-      var that = this;
-      return {
-        getModel: function() {
-          // var model = {value: that.dataBoolean.value, id: that.filterId}
-          var model = [];
-          if (that.dataBoolean.checked === true) {
-            model.push({
-              value: that.dataBoolean.value,
-              id: that.filterId
-            });
-          }
-          if (that.dataDouble.checked === true) {
-            model.push({
-              value: that.dataDouble.value,
-              id: that.filterId
-            });
-          }
-          return model;
-        },
-        setModel: function(model) {}
-      }
-    }
-
-    // 自定义tags列的渲染样式
-    function MyTagsRender() {}
-    MyTagsRender.prototype.init = function(params) {
-      let tagsArr = [];
-      params.data.tags ?
-        tagsArr = params.data.tags.split(';') :
-        tagsArr = [];
-      const addHandler = function(element, type, handler) {
-        if (element.addEventListener) {
-          element.addEventListener(type, handler);
-        } else if (element.attachEvent) {
-          element.attachEvent('on' + type, handler);
-        } else {
-          element['on' + type] = handler;
-        }
-      }
-      const removeHandler = function(element, type, handler) {
-        if (element.removeEventListener) {
-          element.removeEventListener(type, handler);
-        } else if (element.detachEvent) {
-          element.detachEvent('on' + type, handler);
-        } else {
-          element['on' + type] = null;
-        }
-      }
-      this.eGui = document.createElement('ul')
-      for (let i = 0; i < tagsArr.length; i++) {
-        const node = document.createElement('li');
-        const textNode = document.createTextNode(tagsArr[i]);
-        node.classList.add('tag-detail');
-        node.appendChild(textNode);
-        this.eGui.appendChild(node);
-        if (prop.tags.length !== 0) {
-          // console.log(prop.tags[0].value)
-          prop.tags[0].value.indexOf(tagsArr[i]) !== -1 ?
-            node.classList.add('selected-tag') :
-            node.classList.add('normal-tag');
-        }
-      }
-      // 使用事件委托机制
-      const that = this
-      const tagClickEvent = function(event) { // 标签单击事件
-        let val, arr1;
-        const arr2 = [];
-        if (event.target.className.indexOf('active') === -1) {
-          if (params.api.tagsText.tags) {
-            if (params.api.tagsText.tags.indexOf(event.target.innerHTML) === -1) {
-              event.target.className = event.target.className + ' ' + 'active';
-              val = params.api.tagsText.tags + ',' + event.target.innerHTML;
-            } else {
-              val = params.api.tagsText.tags;
-            }
-          } else {
-            event.target.className = event.target.className + ' ' + 'active';
-            val = event.target.innerHTML;
-          }
-        } else {
-          event.target.className = 'tag-detail';
-          arr1 = params.api.tagsText.tags.split(',');
-          for (let i = 0, len = arr1.length; i < len; i++) {
-            if (arr1[i] !== event.target.innerHTML) {
-              arr2.push(arr1[i]);
-            }
-          }
-          val = arr2.join(',');
-        }
-
-        prop.setUnCommittedTag({
-            key: 'tags',
-            value: val
-          })
-          // console.log(params.api.tagsText)
-      }
-      addHandler(window, 'keydown', function(event) {
-        if (event.keyCode === 17) {
-          addHandler(that.eGui, 'click', tagClickEvent); // 当ctrl按下添加标签单击事件
-        }
-      })
-
-      addHandler(window, 'keyup', function(event) {
-        if (event.keyCode === 17) {
-          removeHandler(that.eGui, 'click', tagClickEvent); // 当ctrl按起移除标签单击事件
-        }
-      })
-    }
-    MyTagsRender.prototype.getGui = function() {
-      return this.eGui;
-    }
+					removeHandler: function (element, type, handler) {
+						if (element.removeEventListener) {
+							element.removeEventListener(type, handler, false);
+						} else if (element.detachEvent) {
+							element.detachEvent('on' + type, handler);
+						} else {
+							element['on' + type] = null;
+						}
+					}
+				};
 
 
-    // mine icon
-    var nextIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
-      '<g>' +
-      '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
-      ' <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
-      '<rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
-      '</g>' +
-      '</g>' +
-      '<g>' +
-      '<line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" y2="10.78092" x2="3.56267" y1="5.65627" x1="8.8123" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '<line transform="rotate(90.17411041259766 6.24998140335083,4.031386375427245) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="6.59371" x2="3.62516" y1="1.46906" x1="8.8748" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '</g>' +
-      '</svg>';
-    var lastIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
-      '<g>' +
-      ' <rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
-      '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
-      '<rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
-      '</g>' +
-      '</g>' +
-      '<g>' +
-      ' <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" y2="10.78092" x2="1.56281" y1="5.65627" x1="6.81244" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '<line transform="rotate(90.17411041259766 4.250119209289551,4.03138542175293) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="6.59371" x2="1.6253" y1="1.46906" x1="6.87494" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '<line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" y2="10.78092" x2="5.37504" y1="5.65627" x1="10.62468" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '<line transform="rotate(90.17411041259766 8.062356948852539,4.031385421752929) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="5.43754" y1="1.46906" x1="10.68717" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '</g>' +
-      '</svg>';
-    var firstIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
-      '<g>' +
-      '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
-      '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
-      '<rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
-      ' </g>' +
-      ' </g>' +
-      '<g>' +
-      '<line transform="rotate(90 4.125129222869872,8.218595504760744) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" y2="10.78092" x2="1.50031" y1="5.65627" x1="6.74995" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '<line transform="rotate(180 4.187624454498291,4.03138542175293) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="6.59371" x2="1.56281" y1="1.46906" x1="6.81244" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '<line transform="rotate(90 7.937364578247069,8.218595504760744) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" y2="10.78092" x2="5.31255" y1="5.65627" x1="10.56218" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '<line transform="rotate(180 7.999861240386963,4.031385421752931) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="5.37504" y1="1.46906" x1="10.62468" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '</g>' +
-      '</svg>';
-    var previousIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
-      '<g>' +
-      '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
-      '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
-      ' <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
-      '</g>' +
-      '</g>' +
-      '<g>' +
-      '<line transform="rotate(90 5.81251049041748,8.218595504760744) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" y2="10.78092" x2="3.18769" y1="5.65627" x1="8.43733" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '<line transform="rotate(180 5.875005722045898,4.03138542175293) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="3.25019" y1="1.46906" x1="8.49983" stroke-width="1.5" stroke="#000" fill="none"/>' +
-      '</g>' +
-      '</svg>';
-    var secDownIcon = '<svg width="12px" height="12px" version="1.1" xmlns="http://www.w3.org/2000/svg"' +
-      'fill="#656D78" class="page-svg-icon"><path d="M1 4 L 6 10 L 11 4 Z"/>' +
-      '</svg>'
-    var secUpIcon = '<svg width="12px" height="12px" version="1.1" xmlns="http://www.w3.org/2000/svg"' +
-      'fill="#656D78" class="page-svg-icon"><path d="M1 9 L 6 3 L 11 9 Z"/></svg>'
+			for (var i = 0, len = tabH.length; i < len; i++) {
+				var columnJson = {};
+				columnJson.headerName = tabH[i].headerName;
+				columnJson.field = tabH[i].field;
+				columnJson.width = tabH[i].width;
+				columnJson.suppressSizeToFit = tabH[i].fixed;
+				columnJson.cellStyle = tabH[i].style;
+				columnJson.cellRenderer = tabH[i].render;
+				columnJson.minWidth = tabH[i].minWidth;
+				columnJson.maxWidth = tabH[i].maxWidth;
 
-    gridOptions = {
-      columnDefs: columnDefs,
-      rowHeight: 34,
-      headerHeight: 28,
-      // rowData: opts.tableData // temporarily display
-      localeText: {
-        page: '',
-        more: '...',
-        to: '',
-        of: '/',
-        next: nextIcon,
-        last: lastIcon,
-        first: firstIcon,
-        previous: previousIcon,
-        loadingOoo: '数据加载中...',
-        noRowsToShow: '暂无数据'
-      },
-      icons: {
-        sortAscending: secUpIcon,
-        sortDescending: secDownIcon
-      }
-    };
+				if ('filter' in tabH[i]) {
+					if (tabH[i].filter === 'k2FilterSearch' || tabH[i].filter === 'k2FilterType') {
+						tabH[i].filter === 'k2FilterSearch' ?
+						columnJson.filter = ContainerFilterText:
+						columnJson.filter = DataTypeFilter;
+					} else if (tabH[i].filter){
+						if (tabH[i].filter !== true) {
+							columnJson.filter = tabH[i].filter;
+						}
+					} else {
+						columnJson.suppressMenu = true;
+					}
+				}
 
-    // set table type (set gridOptions attributes)
+				// judge sorting model
+				if ('sorting' in tabH[i]) {
+					if (tabH[i].sorting === false) {
+						columnJson.suppressSorting = true;
+					}
+				}
+				columnDefs.push(columnJson);
+			}
 
-    if (opts.tablePaging) {
+			//是否开启列ID显示模式
+			if ('tableColumId' in opts) {
+				if (typeof opts.tableColumId === 'string') {
+					var columnId = {
+						headerName: "序号",
+						field: "",
+						width: 45,
+						suppressSizeToFit: true,
+						suppressSorting: true,
+						suppressMenu: true,
+						cellRenderer: function (params) {
+							return params.node.id + 1
+						},
+						cellStyle:{'text-align':'center'},
+						suppressSizeToFit: true
+					}
+					if (opts.tableColumId !== '') {
+						columnId.headerName = opts.tableColumId;
+					}
+					columnDefs.unshift(columnId);
+				} else {
+					console.error('tableColumId:请确保为字符串！！');
+					return;
+				}
+			}
 
-      gridOptions.rowModelType = 'pagination'; // set paging model
-    }
+			//判断是否开启tableCheckBox模式
+			if (opts.tableCheckBox && opts.tableCheckBox === true) {
+				// columnDefs[0].checkboxSelection = true;
+				var imgCheckBox = "<span class='img-checkbox-box'>" +
+														"<input type='checkbox' name='allCheckBox' id='allCheckBox' style='opacity:0'/>" +
+														'<label for="allCheckBox"></label>' +
+													"</span>";
+				var columnCheckBox = {
+					headerName: imgCheckBox,
+					field: "",
+					width: 40,
+					suppressSizeToFit: true,
+					suppressSorting: true,
+					suppressMenu: true,
+					checkboxSelection: true,
+					cellStyle:{'text-align': 'center'}
+				};
+				columnDefs.unshift(columnCheckBox);
+				// console.log(columnDefs);
+			}
 
-    if (opts.tableFilter) {
-      gridOptions.enableFilter = true;
-    }
+		} else {
+			console.error('配置文件为json格式数据！！');
+			return;
+		}
 
-    if (opts.tableSort) {
-      gridOptions.enableSorting = true;
-    }
+			// 自定义的过滤器
+			function ContainerFilterText () {
+	    }
 
-    if (opts.tableRowSelectionChanged) {
-      if (typeof opts.tableRowSelectionChanged === 'function') {
-        gridOptions.onSelectionChanged = function() {
-          opts.tableRowSelectionChanged(gridOptions)
-        }
-      } else {
-        console.error('tableRowSelectionChanged: 请设置value为执行函数！！');
-      }
-    }
-    // 改变没也显示多少条数的下拉框插件
-    function addPageNumBox() {
-      if (opts.tablePageNum) {
+	    ContainerFilterText.prototype.init = function (params) {
+	      this.valueGetter = params.valueGetter;
+	      this.filterText = null;
+	      this.setupGui(params);
+	    }
 
-        if (typeof opts.tablePageNum && opts.tablePageNum instanceof Array) {
+	    // not called by ag-Grid, just for us to help setup
+	    ContainerFilterText.prototype.setupGui = function (params) {
+	      this.gui = document.createElement('div');
+	      this.gui.innerHTML =
+	          '<div style="width: auto;">' +
+	            '<div style="background-color:#e0e1e2;padding-left:8px;font-size:12px;line-height:20px;' +
+	            'border-bottom:1px solid #A9A9A9">查询</div>' +
+	            '<div style="margin:15px 8px;white-space:nowrap">' +
+	              '<input class="ag-grid-filter-input" type="text" id="filterText" placeholder="搜索..."/>' +
+	              '<button class="ag-grid-filter-btn" id="filterTextSubmit">' +
+	               ' <svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+										 '<g>' +
+										  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
+										 ' <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
+										  ' <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
+										 ' </g>' +
+										' </g>' +
+										 '<g>' +
+										  '<ellipse stroke="#000" ry="3.5935" rx="3.5935" id="svg_6" cy="5.03132" cx="5.03132" fill-opacity="null" stroke-opacity="null" stroke-width="2" fill="none"/>' +
+										  '<line stroke-linecap="null" stroke-linejoin="null" id="svg_7" y2="10.74967" x2="10.68717" y1="7.99986" x1="7.99986" fill-opacity="null" stroke-opacity="null" stroke-width="2" stroke="#000" fill="none"/>' +
+										 '</g>' +
+									'</svg>' +
+	              '</button>' +
+	            '<div>' +
+	          '</div>';
 
-          var pageNumDiv = document.createElement('div');
-          var south = document.querySelector('#south').childNodes[0].childNodes[0];
-          var pageNumTemp, pageNumArr, selectNum, selectedNum;
+	      var that = this;
+	      this.filterText = this.gui.querySelector('#filterText');
+	      this.eFilterText = this.gui.querySelector('#filterText');
+	      this.eFilterTextSubmit = this.gui.querySelector('#filterTextSubmit');
+	      this.eFilterTextSubmit.addEventListener('click', function () {
+	        that.filterId = params.colDef.field;
+	        console.log(params.colDef.field);
+	        params.filterChangedCallback();
+	      });
+	      this.gui.addEventListener('keydown', function (event) {
+	        if (event.keyCode === 13) {
+	          that.filterId = params.colDef.field;
+	          console.log(params.colDef.field);
+	          params.filterChangedCallback();
+	        }
+	      });
+	    }
 
-          selectedNum = opts.tablePageNum[0];
-          pageNumArr = opts.tablePageNum.sort();
-          pageNumTemp = '<div class="ag-page-size">' +
-            '<select id="pageNumChange">' +
-            '</select>' +
-            '<label class="select-arrow" for="onChangeVal" id="forChangeBox">' +
-            '<svg width="22px" height="20px" version="1.1" fill="#656D78">' +
-            '<path d="M7 8 L 10 13 L 13 8 Z"></path></svg>' +
-            '</label>' +
-            '</div>' +
-            '&nbsp;条/页' +
-            '&nbsp;&nbsp;&nbsp;共<span id="pageNumChangeTotal"></span>条';
-          pageNumDiv.innerHTML = pageNumTemp;
-          pageNumDiv.style.margin = '5px 0 0 0';
-          pageNumDiv.style.lineHeight = '20px';
-          pageNumDiv.style.color = '#666';
-          selectNum = pageNumDiv.getElementsByTagName('select')[0];
+	    ContainerFilterText.prototype.getGui = function () {
+	      return this.gui;
+	    }
 
-          // set pagenum change box
-          for (var i = 0, len = pageNumArr.length; i < len; i++) {
-            var optionItem = document.createElement('option');
-            optionItem.value = pageNumArr[i];
-            optionItem.innerHTML = pageNumArr[i];
-            if (parseInt(optionItem.value) === selectedNum) {
-              optionItem.setAttribute('selected', 'selected');
-            }
-            selectNum.appendChild(optionItem);
-          }
+	    ContainerFilterText.prototype.doesFilterPass = function (params) {
+	        // make sure each word passes separately, ie search for firstname, lastname
+	      var passed = true;
+	      var valueGetter = this.valueGetter;
+	      this.filterText.value.toLowerCase().split(' ').forEach(function (filterWord) {
+	        var value = valueGetter(params);
+	        if (value.toString().toLowerCase().indexOf(filterWord) < 0) {
+	          passed = false;
+	        }
+	      })
 
-          south.firstChild.style.display = 'none';
-          south.appendChild(pageNumDiv);
-          onPageSizeChanged();
-        } else {
-          console.error("tablePageNum:please input data must be array!!")
-          return;
-        }
-      }
-    }
+	      return passed;
+	    }
 
-    // 表格顶部的页数显示和翻页控制功能
-    function addTopNum() {
-      if (opts.tableTopNum) {
-        var topPageNum = document.createElement('div');
-        // var borderLayout_eRootPanel = document.querySelector('#borderLayout_eRootPanel');
-        var borderLayout_eRootPanel = opts.targetDiv.childNodes[0];
-        var topPageNumBtn, topNumBtnPre, topNumBtnNext, btNext, btPrevious, current, k2CurrentNum, btFirst, btLast;
-        var reg = /^\+?[1-9][0-9]*$/;
+	    ContainerFilterText.prototype.isFilterActive = function () {
+	      return this.filterText.value !== null && this.filterText.value !== undefined && this.filterText.value !== '';
+	    }
 
-        //topPageNum.style.width = '100%';
-        //topPageNum.style.height = '30px';
+	    ContainerFilterText.prototype.getApi = function () {
+	      var that = this;
+	      return {
+	        getModel: function () {
+	          var model = {value: that.filterText.value, id: that.filterId};
+	          return model;
+	        },
+	        setModel: function (model) {
+	          that.eFilterText.value = model.value;
+	          that.filterId = model.value;
+	        }
+	      }
+	    }
+
+	    // DataTypeFilter为数据类型过滤器
+	    function DataTypeFilter () {
+	    }
+	    DataTypeFilter.prototype.init = function (params) {
+	      this.eGui = document.createElement('div');
+	      this.eGui.innerHTML =
+	       '<div style="display: inline-block;width:auto;font-size:12px">' +
+	       '<div style="padding:0px 8px;background-color:#e0e1e2;font-size:12px;line-height:20px;' +
+	       ' border-bottom:1px solid #A9A9A9">' +
+	       '根据数据类型查询' +
+	       '</div>' +
+	       '<label style="margin: 10px;display: block;">' +
+	       '  <input type="checkbox" name="dataFilter" checked="true" id="dataDouble" value="DOUBLE"' +
+	       '  style="vertical-align:bottom"/> DOUBLE' +
+	       '</label>' +
+	       '<label style="margin: 10px;display: block;">' +
+	       '  <input type="checkbox" name="dataFilter" id="dataBoolean" value="BOOLEAN" checked="true"' +
+	       '  style="vertical-align:middle"/> BOOLEAN' +
+	       '</label>' +
+	       '</div>';
+	      this.dataDouble = this.eGui.querySelector('#dataDouble');
+	      this.dataBoolean = this.eGui.querySelector('#dataBoolean');
+	      this.dataDouble.addEventListener('change', this.onRbChanged.bind(this));
+	      this.dataBoolean.addEventListener('change', this.onRbChanged.bind(this));
+	      this.filterId = params.colDef.field;
+	      this.filterChangedCallback = params.filterChangedCallback;
+	      // console.log(params)
+	      // this.filterActive = false
+	      this.valueGetter = params.valueGetter;
+	    }
+
+	    DataTypeFilter.prototype.onRbChanged = function () {
+	      if (this.dataDouble.checked === true && this.dataBoolean.checked === true) {
+	        this.filterActive = false;
+	      } else {
+	        this.filterActive = true;
+	      }
+	      this.filterChangedCallback();
+	    }
+
+	    DataTypeFilter.prototype.getGui = function (params) {
+	      return this.eGui;
+	    }
+
+	    DataTypeFilter.prototype.doesFilterPass = function () {
+	      // return this.dataDouble.checked !== false && this.dataBoolean.checked !== false
+	    }
+
+	    DataTypeFilter.prototype.isFilterActive = function () {
+	      return this.filterActive;
+	    }
+
+	    DataTypeFilter.prototype.getApi = function () {
+	      var that = this;
+	      return {
+	        getModel: function () {
+	          // var model = {value: that.dataBoolean.value, id: that.filterId}
+	          var model = [];
+	          if (that.dataBoolean.checked === true) {
+	            model.push({value: that.dataBoolean.value, id: that.filterId});
+	          }
+	          if (that.dataDouble.checked === true) {
+	            model.push({value: that.dataDouble.value, id: that.filterId});
+	          }
+	          return model;
+	        },
+	        setModel: function (model) {
+	        }
+	      }
+	    }
+
+	    // 自定义tags列的渲染样式
+	    function MyTagsRender () {}
+	    MyTagsRender.prototype.init = function (params) {
+	      let tagsArr = [];
+	      params.data.tags
+	        ? tagsArr = params.data.tags.split(';')
+	        : tagsArr = [];
+	      const addHandler = function (element, type, handler) {
+	        if (element.addEventListener) {
+	          element.addEventListener(type, handler);
+	        } else if (element.attachEvent) {
+	          element.attachEvent('on' + type, handler);
+	        } else {
+	          element['on' + type] = handler;
+	        }
+	      }
+	      const removeHandler = function (element, type, handler) {
+	        if (element.removeEventListener) {
+	          element.removeEventListener(type, handler);
+	        } else if (element.detachEvent) {
+	          element.detachEvent('on' + type, handler);
+	        } else {
+	          element['on' + type] = null;
+	        }
+	      }
+	      this.eGui = document.createElement('ul')
+	      for (let i = 0; i < tagsArr.length; i++) {
+	        const node = document.createElement('li');
+	        const textNode = document.createTextNode(tagsArr[i]);
+	        node.classList.add('tag-detail');
+	        node.appendChild(textNode);
+	        this.eGui.appendChild(node);
+	        if (prop.tags.length !== 0) {
+	          // console.log(prop.tags[0].value)
+	          prop.tags[0].value.indexOf(tagsArr[i]) !== -1
+	          ? node.classList.add('selected-tag')
+	          : node.classList.add('normal-tag');
+	        }
+	      }
+	      // 使用事件委托机制
+	      const that = this
+	      const tagClickEvent = function (event) { // 标签单击事件
+	        let val, arr1;
+	        const arr2 = [];
+	        if (event.target.className.indexOf('active') === -1) {
+	          if (params.api.tagsText.tags) {
+	            if (params.api.tagsText.tags.indexOf(event.target.innerHTML) === -1) {
+	              event.target.className = event.target.className + ' ' + 'active';
+	              val = params.api.tagsText.tags + ',' + event.target.innerHTML;
+	            } else {
+	              val = params.api.tagsText.tags;
+	            }
+	          } else {
+	            event.target.className = event.target.className + ' ' + 'active';
+	            val = event.target.innerHTML;
+	          }
+	        } else {
+	          event.target.className = 'tag-detail';
+	          arr1 = params.api.tagsText.tags.split(',');
+	          for (let i = 0, len = arr1.length; i < len; i++) {
+	            if (arr1[i] !== event.target.innerHTML) {
+	              arr2.push(arr1[i]);
+	            }
+	          }
+	          val = arr2.join(',');
+	        }
+
+	        prop.setUnCommittedTag({
+	          key: 'tags',
+	          value: val
+	        })
+	        // console.log(params.api.tagsText)
+	      }
+	      addHandler(window, 'keydown', function (event) {
+	        if (event.keyCode === 17) {
+	          addHandler(that.eGui, 'click', tagClickEvent);// 当ctrl按下添加标签单击事件
+	        }
+	      })
+
+	      addHandler(window, 'keyup', function (event) {
+	        if (event.keyCode === 17) {
+	          removeHandler(that.eGui, 'click', tagClickEvent); // 当ctrl按起移除标签单击事件
+	        }
+	      })
+	    }
+	    MyTagsRender.prototype.getGui = function () {
+	      return this.eGui;
+	    }
+
+
+		// mine icon
+		var nextIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
+							 '<g>' +
+							  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
+							 ' <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
+							   '<rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
+							  '</g>' +
+							 '</g>' +
+							 '<g>' +
+							  '<line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" y2="10.78092" x2="3.56267" y1="5.65627" x1="8.8123" stroke-width="1.5" stroke="#000" fill="none"/>' +
+							  '<line transform="rotate(90.17411041259766 6.24998140335083,4.031386375427245) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="6.59371" x2="3.62516" y1="1.46906" x1="8.8748" stroke-width="1.5" stroke="#000" fill="none"/>' +
+							 '</g>' +
+							'</svg>';
+		var lastIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
+						 '<g>' +
+						 ' <rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
+						  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
+						   '<rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
+						  '</g>' +
+						 '</g>' +
+						 '<g>' +
+						 ' <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" y2="10.78092" x2="1.56281" y1="5.65627" x1="6.81244" stroke-width="1.5" stroke="#000" fill="none"/>' +
+						  '<line transform="rotate(90.17411041259766 4.250119209289551,4.03138542175293) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="6.59371" x2="1.6253" y1="1.46906" x1="6.87494" stroke-width="1.5" stroke="#000" fill="none"/>' +
+						  '<line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" y2="10.78092" x2="5.37504" y1="5.65627" x1="10.62468" stroke-width="1.5" stroke="#000" fill="none"/>' +
+						  '<line transform="rotate(90.17411041259766 8.062356948852539,4.031385421752929) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="5.43754" y1="1.46906" x1="10.68717" stroke-width="1.5" stroke="#000" fill="none"/>' +
+						 '</g>' +
+						'</svg>';
+		var firstIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
+						 '<g>' +
+						  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
+						  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
+						   '<rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
+						 ' </g>' +
+						' </g>' +
+						 '<g>' +
+						  '<line transform="rotate(90 4.125129222869872,8.218595504760744) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" y2="10.78092" x2="1.50031" y1="5.65627" x1="6.74995" stroke-width="1.5" stroke="#000" fill="none"/>' +
+						  '<line transform="rotate(180 4.187624454498291,4.03138542175293) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="6.59371" x2="1.56281" y1="1.46906" x1="6.81244" stroke-width="1.5" stroke="#000" fill="none"/>' +
+						  '<line transform="rotate(90 7.937364578247069,8.218595504760744) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" y2="10.78092" x2="5.31255" y1="5.65627" x1="10.56218" stroke-width="1.5" stroke="#000" fill="none"/>' +
+						  '<line transform="rotate(180 7.999861240386963,4.031385421752931) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="5.37504" y1="1.46906" x1="10.62468" stroke-width="1.5" stroke="#000" fill="none"/>' +
+						 '</g>' +
+						'</svg>';
+		var previousIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
+							 '<g>' +
+							  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
+							  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
+							  ' <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>' +
+							  '</g>' +
+							 '</g>' +
+							 '<g>' +
+							  '<line transform="rotate(90 5.81251049041748,8.218595504760744) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" y2="10.78092" x2="3.18769" y1="5.65627" x1="8.43733" stroke-width="1.5" stroke="#000" fill="none"/>' +
+							  '<line transform="rotate(180 5.875005722045898,4.03138542175293) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="3.25019" y1="1.46906" x1="8.49983" stroke-width="1.5" stroke="#000" fill="none"/>' +
+							 '</g>' +
+							'</svg>';
+		var secDownIcon = '<svg width="12px" height="12px" version="1.1" xmlns="http://www.w3.org/2000/svg"' +
+	      'fill="#656D78" class="page-svg-icon"><path d="M1 4 L 6 10 L 11 4 Z"/>' +
+	      '</svg>'
+	    var secUpIcon = '<svg width="12px" height="12px" version="1.1" xmlns="http://www.w3.org/2000/svg"' +
+	      'fill="#656D78" class="page-svg-icon"><path d="M1 9 L 6 3 L 11 9 Z"/></svg>'
+
+		gridOptions = {
+		  columnDefs: columnDefs,
+			rowHeight:34,
+			headerHeight:28,
+		  // rowData: opts.tableData // temporarily display
+		  localeText: {
+	        page: '',
+	        more: '...',
+	        to: '',
+	        of: '/',
+	        next: nextIcon,
+	        last: lastIcon,
+	        first: firstIcon,
+	        previous: previousIcon,
+	        loadingOoo: '数据加载中...',
+	        noRowsToShow: '暂无数据'
+	      },
+	      icons: {
+	        sortAscending: secUpIcon,
+	        sortDescending: secDownIcon
+	      }
+		};
+
+		// set table type (set gridOptions attributes)
+
+		if (opts.tablePaging) {
+
+			gridOptions.rowModelType = 'pagination'; // set paging model
+		}
+
+		if (opts.tableFilter) {
+			gridOptions.enableFilter = true;
+		}
+
+		if (opts.tableSort) {
+			gridOptions.enableSorting = true;
+		}
+
+		if (opts.tableRowSelectionChanged) {
+			if (typeof opts.tableRowSelectionChanged === 'function') {
+				gridOptions.onSelectionChanged = function () {
+					opts.tableRowSelectionChanged(gridOptions)
+				}
+			} else {
+				console.error('tableRowSelectionChanged: 请设置value为执行函数！！');
+			}
+		}
+		// 改变没也显示多少条数的下拉框插件
+		function addPageNumBox () {
+			if (opts.tablePageNum) {
+
+				if (typeof opts.tablePageNum && opts.tablePageNum instanceof Array) {
+
+					var pageNumDiv = document.createElement('div');
+					var south = document.querySelector('#south').childNodes[0].childNodes[0];
+					var pageNumTemp, pageNumArr, selectNum, selectedNum;
+
+					selectedNum = opts.tablePageNum[0];
+					pageNumArr = opts.tablePageNum.sort();
+					pageNumTemp = '<div class="ag-page-size">' +
+													'<select id="pageNumChange">' +
+											    '</select>' +
+													'<label class="select-arrow" for="onChangeVal" id="forChangeBox">' +
+													'<svg width="22px" height="20px" version="1.1" fill="#656D78">' +
+													'<path d="M7 8 L 10 13 L 13 8 Z"></path></svg>' +
+													'</label>' +
+												'</div>'+
+										    '&nbsp;条/页' +
+										    '&nbsp;&nbsp;&nbsp;共<span id="pageNumChangeTotal"></span>条';
+					pageNumDiv.innerHTML = pageNumTemp;
+					pageNumDiv.style.margin = '5px 0 0 0';
+					pageNumDiv.style.lineHeight = '20px';
+					pageNumDiv.style.color = '#666';
+					selectNum = pageNumDiv.getElementsByTagName('select')[0];
+
+					// set pagenum change box
+					for (var i = 0, len = pageNumArr.length; i < len; i++) {
+						var optionItem = document.createElement('option');
+						 	optionItem.value = pageNumArr[i];
+						 	optionItem.innerHTML = pageNumArr[i];
+						if (parseInt(optionItem.value) === selectedNum) {
+							optionItem.setAttribute('selected', 'selected');
+						}
+						selectNum.appendChild(optionItem);
+					}
+
+					south.firstChild.style.display = 'none';
+					south.appendChild(pageNumDiv);
+					onPageSizeChanged();
+				} else {
+					console.error("tablePageNum:please input data must be array!!")
+					return;
+				}
+			}
+		}
+
+		// 表格顶部的页数显示和翻页控制功能
+		function addTopNum () {
+			if (opts.tableTopNum) {
+				var topPageNum = document.createElement('div');
+				// var borderLayout_eRootPanel = document.querySelector('#borderLayout_eRootPanel');
+				var borderLayout_eRootPanel = opts.targetDiv.childNodes[0];
+				var topPageNumBtn, topNumBtnPre, topNumBtnNext, btNext, btPrevious, current, k2CurrentNum, btFirst, btLast;
+				var reg = /^\+?[1-9][0-9]*$/;
+
+				// topPageNum.style.width = '100%';
+				// topPageNum.style.height = '30px';
         topPageNum.classList.add('k2-top-page-nav');
         topPageNumBtn = '<div id="k2TopNum" style="height:100%;width:auto;color:#666">' +
           '<button id="topNumBtnPre" class="ag-paging-button">' + previousIcon + '</button>' +
