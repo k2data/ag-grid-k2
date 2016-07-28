@@ -31,17 +31,10 @@
   height: calc(100% - 70px);
   height: -webkit-calc(100% - 70px);
   height: -moz-calc(100% - 70px);
-<<<<<<< HEAD
 }
 .ag-fresh.ag-container {
   color: #666;
 }
-=======
-}
-.ag-fresh.ag-container {
-  color: #666;
-}
->>>>>>> 34e7f01015adc0440786ec11ef9358a161d62ab0
 .ag-fresh .ag-root {
   border: 1px solid #e9e9e9;
 }
