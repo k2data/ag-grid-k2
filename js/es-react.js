@@ -102,10 +102,14 @@
 			//判断是否开启tableCheckBox模式
 			if (opts.tableCheckBox && opts.tableCheckBox === true) {
 				// columnDefs[0].checkboxSelection = true;
+				var imgCheckBox = "<span class='img-checkbox-box'>" +
+														"<input type='checkbox' name='allCheckBox' id='allCheckBox' style='opacity:0'/>" +
+														'<label for="allCheckBox"></label>' +
+													"</span>";
 				var columnCheckBox = {
-					headerName: "<input type='checkbox' name='allCheckBox' id='allCheckBox'/>",
+					headerName: imgCheckBox,
 					field: "",
-					width: 35,
+					width: 40,
 					suppressSizeToFit: true,
 					suppressSorting: true,
 					suppressMenu: true,
@@ -373,7 +377,7 @@
 
 
 		// mine icon
-		var nextIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+		var nextIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
 							 '<g>' +
 							  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
 							 ' <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
@@ -385,7 +389,7 @@
 							  '<line transform="rotate(90.17411041259766 6.24998140335083,4.031386375427245) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="6.59371" x2="3.62516" y1="1.46906" x1="8.8748" stroke-width="1.5" stroke="#000" fill="none"/>' +
 							 '</g>' +
 							'</svg>';
-		var lastIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+		var lastIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
 						 '<g>' +
 						 ' <rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
 						  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
@@ -399,7 +403,7 @@
 						  '<line transform="rotate(90.17411041259766 8.062356948852539,4.031385421752929) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="5.43754" y1="1.46906" x1="10.68717" stroke-width="1.5" stroke="#000" fill="none"/>' +
 						 '</g>' +
 						'</svg>';
-		var firstIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+		var firstIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
 						 '<g>' +
 						  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
 						  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
@@ -413,7 +417,7 @@
 						  '<line transform="rotate(180 7.999861240386963,4.031385421752931) " stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_5" y2="6.59371" x2="5.37504" y1="1.46906" x1="10.62468" stroke-width="1.5" stroke="#000" fill="none"/>' +
 						 '</g>' +
 						'</svg>';
-		var previousIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">' +
+		var previousIcon = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" class="page-svg-icon">' +
 							 '<g>' +
 							  '<rect fill="#fff" id="canvas_background" height="14" width="14" y="-1" x="-1" style="opacity:0"/>' +
 							  '<g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">' +
@@ -426,10 +430,10 @@
 							 '</g>' +
 							'</svg>';
 		var secDownIcon = '<svg width="12px" height="12px" version="1.1" xmlns="http://www.w3.org/2000/svg"' +
-	      'fill="#656D78"><path d="M1 4 L 6 10 L 11 4 Z"/>' +
+	      'fill="#656D78" class="page-svg-icon"><path d="M1 4 L 6 10 L 11 4 Z"/>' +
 	      '</svg>'
 	    var secUpIcon = '<svg width="12px" height="12px" version="1.1" xmlns="http://www.w3.org/2000/svg"' +
-	      'fill="#656D78"><path d="M1 9 L 6 3 L 11 9 Z"/></svg>'
+	      'fill="#656D78" class="page-svg-icon"><path d="M1 9 L 6 3 L 11 9 Z"/></svg>'
 
 		gridOptions = {
 		  columnDefs: columnDefs,
@@ -536,436 +540,437 @@
 				var topPageNumBtn, topNumBtnPre, topNumBtnNext, btNext, btPrevious, current, k2CurrentNum, btFirst, btLast;
 				var reg = /^\+?[1-9][0-9]*$/;
 
-				topPageNum.style.width = '100%';
-				topPageNum.style.height = '30px';
-				topPageNumBtn = '<div id="k2TopNum" style="height:100%;width:auto;color:#666">' +
-									'<button id="topNumBtnPre" class="ag-paging-button">'+previousIcon+'</button>' +
-										'<span id="k2CurrentNum">1</span>/<span id="k2TotalNum">...</span>' +
-									'<button id="topNumBtnNext" class="ag-paging-button">'+nextIcon+'</button>' +
-								'</div>';
-				topPageNum.innerHTML = topPageNumBtn;
+				// topPageNum.style.width = '100%';
+				// topPageNum.style.height = '30px';
+        topPageNum.classList.add('k2-top-page-nav');
+        topPageNumBtn = '<div id="k2TopNum" style="height:100%;width:auto;color:#666">' +
+          '<button id="topNumBtnPre" class="ag-paging-button">' + previousIcon + '</button>' +
+          '<span id="k2CurrentNum">1</span>/<span id="k2TotalNum">...</span>' +
+          '<button id="topNumBtnNext" class="ag-paging-button">' + nextIcon + '</button>' +
+          '</div>';
+        topPageNum.innerHTML = topPageNumBtn;
 
-				switch (opts.tableTopNum) {
-					case 'left':
-						opts.targetDiv.insertBefore(topPageNum, borderLayout_eRootPanel);
-						document.querySelector('#k2TopNum').style.float = 'left';
-						break;
-					case 'right':
-						opts.targetDiv.insertBefore(topPageNum, borderLayout_eRootPanel);
-						document.querySelector('#k2TopNum').style.float = 'right';
-						break;
-					case 'middle':
-						document.querySelector('#k2TopNum').style.margin = '0px auto';
-						break;
-					default:
-						console.error('tableTopNum: please input "left" or "right" or "middle"!!');
-						return;
-				}
+        switch (opts.tableTopNum) {
+          case 'left':
+            opts.targetDiv.insertBefore(topPageNum, borderLayout_eRootPanel);
+            document.querySelector('#k2TopNum').style.float = 'left';
+            break;
+          case 'right':
+            opts.targetDiv.insertBefore(topPageNum, borderLayout_eRootPanel);
+            document.querySelector('#k2TopNum').style.float = 'right';
+            break;
+          case 'middle':
+            document.querySelector('#k2TopNum').style.margin = '0px auto';
+            break;
+          default:
+            console.error('tableTopNum: please input "left" or "right" or "middle"!!');
+            return;
+        }
 
-				topNumBtnPre = document.querySelector('#topNumBtnPre');
-				topNumBtnNext = document.querySelector('#topNumBtnNext');
-				btPrevious = document.querySelector('#btPrevious');
-				btNext = document.querySelector('#btNext');
-				k2CurrentNum = document.querySelector('#k2CurrentNum');
-				current = document.querySelector('#current');
-				btFirst = document.querySelector('#btFirst');
-				btLast = document.querySelector('#btLast');
+        topNumBtnPre = document.querySelector('#topNumBtnPre');
+        topNumBtnNext = document.querySelector('#topNumBtnNext');
+        btPrevious = document.querySelector('#btPrevious');
+        btNext = document.querySelector('#btNext');
+        k2CurrentNum = document.querySelector('#k2CurrentNum');
+        current = document.querySelector('#current');
+        btFirst = document.querySelector('#btFirst');
+        btLast = document.querySelector('#btLast');
 
-				EventUtil.addHandler(topNumBtnPre, 'click', function () {
-					btPrevious.click();
-					k2CurrentNum.innerHTML = current.value;
-				});
+        EventUtil.addHandler(topNumBtnPre, 'click', function() {
+          btPrevious.click();
+          k2CurrentNum.innerHTML = current.value;
+        });
 
-				EventUtil.addHandler(topNumBtnNext, 'click', function () {
-					btNext.click();
-					k2CurrentNum.innerHTML = current.value;
-				});
+        EventUtil.addHandler(topNumBtnNext, 'click', function() {
+          btNext.click();
+          k2CurrentNum.innerHTML = current.value;
+        });
 
-				EventUtil.addHandler(btPrevious, 'click', function () {
-					k2CurrentNum.innerHTML = current.value;
-				});
+        EventUtil.addHandler(btPrevious, 'click', function() {
+          k2CurrentNum.innerHTML = current.value;
+        });
 
-				EventUtil.addHandler(btNext, 'click', function () {
-					k2CurrentNum.innerHTML = current.value;
-				});
+        EventUtil.addHandler(btNext, 'click', function() {
+          k2CurrentNum.innerHTML = current.value;
+        });
 
-				EventUtil.addHandler(btFirst, 'click', function () {
-					k2CurrentNum.innerHTML = current.value;
-				});
+        EventUtil.addHandler(btFirst, 'click', function() {
+          k2CurrentNum.innerHTML = current.value;
+        });
 
-				EventUtil.addHandler(btLast, 'click', function () {
-					k2CurrentNum.innerHTML = current.value;
-				});
+        EventUtil.addHandler(btLast, 'click', function() {
+          k2CurrentNum.innerHTML = current.value;
+        });
 
-				EventUtil.addHandler(current, 'keyup', function (event) {
-			      if (reg.test(event.target.value)) {
-					k2CurrentNum.innerHTML = current.value;
-			      } else {
-			        return;
-			      }
-				});
+        EventUtil.addHandler(current, 'keyup', function(event) {
+          if (reg.test(event.target.value)) {
+            k2CurrentNum.innerHTML = current.value;
+          } else {
+            return;
+          }
+        });
 
-				EventUtil.addHandler(current, 'blur', function (event) {
-					console.log(event.target.value)
-					if (event.target.value === '') {
-				        event.target.value = k2CurrentNum.innerHTML;
-				      }
-				});
+        EventUtil.addHandler(current, 'blur', function(event) {
+          console.log(event.target.value)
+          if (event.target.value === '') {
+            event.target.value = k2CurrentNum.innerHTML;
+          }
+        });
 
-			}
+      }
 
 
-		}
+    }
 
-		// 获取数据时的显示
-		var ajaxState, allOfTheData;
-		var pageSize;
-		// 判断tablePageNum是否存在，和后期的处理
-		if (opts.tablePageNum) {
-			if (opts.tablePageNum instanceof Array) {
-				if (typeof opts.tablePageNum[0] === 'number') {
-					pageSize = opts.tablePageNum[0]
-				} else {
-					console.error('tablePageNum warning:请确保数组的子项全部为数字！！');
-					return;
-				}
-			} else {
-				console.error('tablePageNum:请设置为数组');
-				return;
-			}
-		} else {
-			pageSize = 50;
-		}
-		//判断数据是本地test数据还是远程URl数据
-		switch (typeof opts.tableData) {
-			case 'object':
-				// if (opts.tableData instanceof Array) {
-				// 	if (opts.tablePaging) {
-				// 		// console.log(gridOptions);
-				// 		// console.log(opts.tableData instanceof Array);
-				// 		// setRowData(opts.tableData);
-				// 		setTimeout(function(){
-				// 			addTabRowClick();//行单击事件
-				// 			allSelectModel();// 行全选事件
-				// 			addPageNumBox(); //是否添加页数控制器
-				// 			addTopNum(); // 是否添加顶部页码控制
-				// 			sizeToFit();
-				// 			setRowData(opts.tableData);
-				// 		}, 500)
-				//
-				// 	} else {
-				// 		gridOptions.rowData = opts.tableData;
-				// 		setTimeout(function () {
-				// 			sizeToFit();
-				// 			allSelectModel();// 行全选事件
-				// 		}, 500);
-				// 	}
-				// 	ajaxState = false;
-				// } else {
-				// 	ajaxState = true;
-				// }
-				// console.log('loacl');
+    // 获取数据时的显示
+    var ajaxState, allOfTheData;
+    var pageSize;
+    // 判断tablePageNum是否存在，和后期的处理
+    if (opts.tablePageNum) {
+      if (opts.tablePageNum instanceof Array) {
+        if (typeof opts.tablePageNum[0] === 'number') {
+          pageSize = opts.tablePageNum[0]
+        } else {
+          console.error('tablePageNum warning:请确保数组的子项全部为数字！！');
+          return;
+        }
+      } else {
+        console.error('tablePageNum:请设置为数组');
+        return;
+      }
+    } else {
+      pageSize = 50;
+    }
+    //判断数据是本地test数据还是远程URl数据
+    switch (typeof opts.tableData) {
+      case 'object':
+        // if (opts.tableData instanceof Array) {
+        // 	if (opts.tablePaging) {
+        // 		// console.log(gridOptions);
+        // 		// console.log(opts.tableData instanceof Array);
+        // 		// setRowData(opts.tableData);
+        // 		setTimeout(function(){
+        // 			addTabRowClick();//行单击事件
+        // 			allSelectModel();// 行全选事件
+        // 			addPageNumBox(); //是否添加页数控制器
+        // 			addTopNum(); // 是否添加顶部页码控制
+        // 			sizeToFit();
+        // 			setRowData(opts.tableData);
+        // 		}, 500)
+        //
+        // 	} else {
+        // 		gridOptions.rowData = opts.tableData;
+        // 		setTimeout(function () {
+        // 			sizeToFit();
+        // 			allSelectModel();// 行全选事件
+        // 		}, 500);
+        // 	}
+        // 	ajaxState = false;
+        // } else {
+        // 	ajaxState = true;
+        // }
+        // console.log('loacl');
 
-				// opts.tableData.local?
-				// console.log(opts.tableData) :
-				// (
-				// console.error('tableData:please input correct!!')
-				// )
-				if (opts.tableData.local) {
-					if (typeof opts.tableData.local === 'boolean') { //判断local字段是否是布尔类型
-						// 当为本地数据时，判断数据格式是否正确(不能是远程数据的格式)
-						if (opts.tableData.data instanceof Array) {
-							for (let i = 0, len = opts.tableData.data.length; i < len; i++) {
-								if (typeof opts.tableData.data[i] !== 'object') {
-									console.error('tableData.data: please input correct data!');
-									return;
-								}
-							}
-
-							if (opts.tablePaging) {
-								setTimeout(function(){
-									addTabRowClick();//行单击事件
-									allSelectModel();// 行全选事件
-									addPageNumBox(); //是否添加页数控制器
-									addTopNum(); // 是否添加顶部页码控制
-									sizeToFit();
-									setRowData(opts.tableData.data);
-								}, 500)
-
-							} else {
-								gridOptions.rowData = opts.tableData.data;
-								setTimeout(function () {
-									sizeToFit();
-									allSelectModel();// 行全选事件
-								}, 500);
-							}
-							ajaxState = false;
-						} else {
-							console.error('tableData.data: must be array!!');
-							return;
-						}
-					} else {
-						console.error('tableData.local: please input boolean type!!');
-						return;
-					}
-				} else {
-					if (opts.tableData.data instanceof Array) {
-						ajaxState = true;
-					} else {
-						console.error('tableData.data: must be array!!');
-						return;
-					}
-				}
-				break;
-			case 'string':
-				gridOptions.rowData = null;
-				ajaxState = true;
-				break;
-			default:
-				console.error("please input correct data");
-				ajaxState = false;
-				return;
-		}
-		// 判断表格行选择模式
-		if (opts.tableRowSelect) {
-			switch (opts.tableRowSelect) {
-				case 'one':
-					gridOptions.rowSelection = 'single';
-					break;
-				case 'more':
-					gridOptions.rowSelection = 'multiple';
-					break;
-				default:
-					console.error('tableRowSelect:请设置value为’one’或‘more’！！');
-					return;
-			}
-		}
-
-		//判断是否开启自适应模式
-		if (opts.tableResize) {
-			gridOptions.enableColResize = true;
-		}
-
-		// 全选或反选的功能
-		function allSelectModel () {
-			if (opts.tableCheckBox && opts.tableCheckBox === true) {
-				var allCheckBox = document.querySelector('#allCheckBox');
-				EventUtil.addHandler(allCheckBox, 'click', function (e) {
-					if (e.target.checked === true) {
-						// console.log(1); //此处可增加全选后要执行的函数。。。。。后期根据需求增加要执行的函数
-						gridOptions.api.selectAll(true);
-					} else {
-						// console.log(2);//此处可增加全选后要执行的函数。。。。。
-						gridOptions.api.deselectAll(true);
-					}
-				});
-			}
-		}
-
-		// 判断单击事件
-		function addTabRowClick () {
-			if (opts.tableRowClick) {
-				gridOptions.api.addEventListener('rowClicked', function (params) {
-					opts.tableRowClick(arguments[0])
-				});
-			}
-		}
-
-		// 调整每页显示条数时触发
-		function onPageSizeChanged() {
-		 	var pageNumChange = document.querySelector('#pageNumChange');
-		 	EventUtil.addHandler(pageNumChange, 'change', function (e) {
-			    pageSize = new Number(this.value);
-			    createNewDatasource();
-					if (!opts.tableData.local) {
-						ajaxPaging(opts.tableData.data[2]);
-					}
-		 	});
-		}
-		// 自适应事件
-		function sizeToFit() {
-			if (opts.tableResize) {
-				gridOptions.api.addEventListener('modelUpdated', function () {
-					gridOptions.api.sizeColumnsToFit();
-				});
-				EventUtil.addHandler(window, 'resize', function () {
-					gridOptions.api.sizeColumnsToFit();
-				})
-			}
-			// 自适应以后开启sizeColumnsToFit API属性,将此写于此处防止数据加载时间太长，导致首次加载不能自适应的bug
-		}
-		// 分页模式下使用, 创建数据源
-		function createNewDatasource() {
-		    if (!allOfTheData) {
-		        return;
-		    }
-
-		    var dataSource = {
-		        pageSize: pageSize, // 设置每页显示条数
-		        getRows: function (params) {
-		        		var k2TotalNum, total, pageNumChangeTotal;
-		            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-								console.log('my test');
-                var rowsThisPage = allOfTheData.slice(params.startRow, params.endRow);
-                var lastRow = -1;
-
-                lastRow = allOfTheData.length;
-                params.successCallback(rowsThisPage, lastRow);
-                k2TotalNum = document.querySelector('#k2TotalNum');
-                pageNumChangeTotal = document.querySelector('#pageNumChangeTotal');
-                total = document.querySelector('#total').innerHTML;
-                if (k2TotalNum) {
-                	k2TotalNum.innerHTML = total ;
+        // opts.tableData.local?
+        // console.log(opts.tableData) :
+        // (
+        // console.error('tableData:please input correct!!')
+        // )
+        if (opts.tableData.local) {
+          if (typeof opts.tableData.local === 'boolean') { //判断local字段是否是布尔类型
+            // 当为本地数据时，判断数据格式是否正确(不能是远程数据的格式)
+            if (opts.tableData.data instanceof Array) {
+              for (let i = 0, len = opts.tableData.data.length; i < len; i++) {
+                if (typeof opts.tableData.data[i] !== 'object') {
+                  console.error('tableData.data: please input correct data!');
+                  return;
                 }
-								if (pageNumChangeTotal) {
-									pageNumChangeTotal.innerHTML = total;
-								}
-		        }
-		    };
-				// console.log(gridOptions)
-		    gridOptions.api.setDatasource(dataSource);
-		}
+              }
+
+              if (opts.tablePaging) {
+                setTimeout(function() {
+                  addTabRowClick(); //行单击事件
+                  allSelectModel(); // 行全选事件
+                  addPageNumBox(); //是否添加页数控制器
+                  addTopNum(); // 是否添加顶部页码控制
+                  sizeToFit();
+                  setRowData(opts.tableData.data);
+                }, 500)
+
+              } else {
+                gridOptions.rowData = opts.tableData.data;
+                setTimeout(function() {
+                  sizeToFit();
+                  allSelectModel(); // 行全选事件
+                }, 500);
+              }
+              ajaxState = false;
+            } else {
+              console.error('tableData.data: must be array!!');
+              return;
+            }
+          } else {
+            console.error('tableData.local: please input boolean type!!');
+            return;
+          }
+        } else {
+          if (opts.tableData.data instanceof Array) {
+            ajaxState = true;
+          } else {
+            console.error('tableData.data: must be array!!');
+            return;
+          }
+        }
+        break;
+      case 'string':
+        gridOptions.rowData = null;
+        ajaxState = true;
+        break;
+      default:
+        console.error("please input correct data");
+        ajaxState = false;
+        return;
+    }
+    // 判断表格行选择模式
+    if (opts.tableRowSelect) {
+      switch (opts.tableRowSelect) {
+        case 'one':
+          gridOptions.rowSelection = 'single';
+          break;
+        case 'more':
+          gridOptions.rowSelection = 'multiple';
+          break;
+        default:
+          console.error('tableRowSelect:请设置value为’one’或‘more’！！');
+          return;
+      }
+    }
+
+    //判断是否开启自适应模式
+    if (opts.tableResize) {
+      gridOptions.enableColResize = true;
+    }
+
+    // 全选或反选的功能
+    function allSelectModel() {
+      if (opts.tableCheckBox && opts.tableCheckBox === true) {
+        var allCheckBox = document.querySelector('#allCheckBox');
+        EventUtil.addHandler(allCheckBox, 'click', function(e) {
+          if (e.target.checked === true) {
+            // console.log(1); //此处可增加全选后要执行的函数。。。。。后期根据需求增加要执行的函数
+            gridOptions.api.selectAll(true);
+          } else {
+            // console.log(2);//此处可增加全选后要执行的函数。。。。。
+            gridOptions.api.deselectAll(true);
+          }
+        });
+      }
+    }
+
+    // 判断单击事件
+    function addTabRowClick() {
+      if (opts.tableRowClick) {
+        gridOptions.api.addEventListener('rowClicked', function(params) {
+          opts.tableRowClick(arguments[0])
+        });
+      }
+    }
+
+    // 调整每页显示条数时触发
+    function onPageSizeChanged() {
+      var pageNumChange = document.querySelector('#pageNumChange');
+      EventUtil.addHandler(pageNumChange, 'change', function(e) {
+        pageSize = new Number(this.value);
+        createNewDatasource();
+        if (!opts.tableData.local) {
+          ajaxPaging(opts.tableData.data[2]);
+        }
+      });
+    }
+    // 自适应事件
+    function sizeToFit() {
+      if (opts.tableResize) {
+        gridOptions.api.addEventListener('modelUpdated', function() {
+          gridOptions.api.sizeColumnsToFit();
+        });
+        EventUtil.addHandler(window, 'resize', function() {
+          gridOptions.api.sizeColumnsToFit();
+        })
+      }
+      // 自适应以后开启sizeColumnsToFit API属性,将此写于此处防止数据加载时间太长，导致首次加载不能自适应的bug
+    }
+    // 分页模式下使用, 创建数据源
+    function createNewDatasource() {
+      if (!allOfTheData) {
+        return;
+      }
+
+      var dataSource = {
+        pageSize: pageSize, // 设置每页显示条数
+        getRows: function(params) {
+          var k2TotalNum, total, pageNumChangeTotal;
+          console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+          console.log('my test');
+          var rowsThisPage = allOfTheData.slice(params.startRow, params.endRow);
+          var lastRow = -1;
+
+          lastRow = allOfTheData.length;
+          params.successCallback(rowsThisPage, lastRow);
+          k2TotalNum = document.querySelector('#k2TotalNum');
+          pageNumChangeTotal = document.querySelector('#pageNumChangeTotal');
+          total = document.querySelector('#total').innerHTML;
+          if (k2TotalNum) {
+            k2TotalNum.innerHTML = total;
+          }
+          if (pageNumChangeTotal) {
+            pageNumChangeTotal.innerHTML = total;
+          }
+        }
+      };
+      // console.log(gridOptions)
+      gridOptions.api.setDatasource(dataSource);
+    }
 
 
-		// 介于不是全部加载所有数据，针对url进行分页的情况
-		function ajaxPaging(url) {
-		    if (!url) {
-		        return;
-		    }
+    // 介于不是全部加载所有数据，针对url进行分页的情况
+    function ajaxPaging(url) {
+      if (!url) {
+        return;
+      }
 
-		    var dataSource = {
-		        pageSize: pageSize, // 设置每页显示条数
-		        getRows: function (params) {
-		        		var k2TotalNum, total, totalNum, pageNumChangeTotal, allOfTheData, splitO;
-		            console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-								url.indexOf('?') === -1 ? splitO = '?' : splitO = ''
-								let URL = url + splitO + 'size='+pageSize+'' + '&' + 'page=' + params.endRow / pageSize;
-								console.log(URL);
+      var dataSource = {
+        pageSize: pageSize, // 设置每页显示条数
+        getRows: function(params) {
+          var k2TotalNum, total, totalNum, pageNumChangeTotal, allOfTheData, splitO;
+          console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+          url.indexOf('?') === -1 ? splitO = '?' : splitO = ''
+          let URL = url + splitO + '' + opts.tableData.data[0] + '=' + pageSize + '' + '&' + '' + opts.tableData.data[1] + '=' + params.endRow / pageSize;
+          console.log(URL);
 
-								fetch (URL)
-								.then (function (response) {
-							    if (response.status !== 200) {
-							      console.log('存在问题，状态码:' + response.status)
-							      biu('服务器异常！', {type: 'danger', timeout: 10000})
-							      return
-							    }
-							    return response.json()
-							  })
-								.then (function (data) {
-									if (data == null) {
-							      return;
-							    }
-									allOfTheData = opts.tableData.data[3](data).data;
-									total = opts.tableData.data[3](data).total;
-								})
-								.then (function () {
-									if (!allOfTheData) {
-										return;
-									}
-									var rowsThisPage = allOfTheData.slice(params.startRow, params.endRow);
-									var lastRow = -1;
+          fetch(URL)
+            .then(function(response) {
+              if (response.status !== 200) {
+                console.log('存在问题，状态码:' + response.status)
+                biu('服务器异常！', {
+                  type: 'danger',
+                  timeout: 10000
+                })
+                return
+              }
+              return response.json()
+            })
+            .then(function(data) {
+              if (data == null) {
+                return;
+              }
+              allOfTheData = opts.tableData.data[3](data).data;
+              total = opts.tableData.data[3](data).total;
+            })
+            .then(function() {
+              if (!allOfTheData) {
+                return;
+              }
+              var rowsThisPage = allOfTheData.slice(params.startRow, params.endRow);
+              var lastRow = -1;
 
-									// lastRow = allOfTheData.length;
-									lastRow = total;
-									params.successCallback(rowsThisPage, lastRow);
-									document.querySelector('#k2CurrentNum').innerHTML = document.querySelector('#current').value;
-									k2TotalNum = document.querySelector('#k2TotalNum');
-									pageNumChangeTotal = document.querySelector('#pageNumChangeTotal');
-									totalNum = document.querySelector('#total').innerHTML;
-									if (k2TotalNum) {
-										k2TotalNum.innerHTML = totalNum ;
-									}
-									if (pageNumChangeTotal) {
-										pageNumChangeTotal.innerHTML = totalNum;
-									}
-								})
-								.catch (function (err) {
-									console.error('Fetch Err:' + err);
-									params.failCallback(err);
-								})
-		        }
-		    };
-		    gridOptions.api.setDatasource(dataSource);
-		}
+              // lastRow = allOfTheData.length;
+              lastRow = total;
+              params.successCallback(rowsThisPage, lastRow);
+              document.querySelector('#k2CurrentNum').innerHTML = document.querySelector('#current').value;
+              k2TotalNum = document.querySelector('#k2TotalNum');
+              pageNumChangeTotal = document.querySelector('#pageNumChangeTotal');
+              totalNum = document.querySelector('#total').innerHTML;
+              if (k2TotalNum) {
+                k2TotalNum.innerHTML = totalNum;
+              }
+              if (pageNumChangeTotal) {
+                pageNumChangeTotal.innerHTML = totalNum;
+              }
+            })
+            .catch(function(err) {
+              console.error('Fetch Err:' + err);
+              params.failCallback(err);
+            })
+        }
+      };
+      gridOptions.api.setDatasource(dataSource);
+    }
 
-		function setRowData(rowData) {
-		    allOfTheData = rowData;
-		    createNewDatasource();
-		}
+    function setRowData(rowData) {
+      allOfTheData = rowData;
+      createNewDatasource();
+    }
 
 
-		// 后台远程获取数据全部都加载的情况，让ag-grid自己进行分页
-		function ajaxData(url) {
-		  // if ajax data
-		  var httpRequest = new XMLHttpRequest();
-			  httpRequest.open('GET', url);
-			  httpRequest.send();
-			  httpRequest.onreadystatechange = function() {
-	             if (httpRequest.readyState == 4 && httpRequest.status == 200) {
-		             var httpResponse = JSON.parse(httpRequest.responseText);
-		            //  console.log(httpResponse);
-		              if (opts.tablePaging) {
-										addTabRowClick();//行单击事件
-										allSelectModel();// 行全选事件
-										addPageNumBox(); //是否添加页数控制器
-										addTopNum(); // 是否添加顶部页码控制
-		              	setRowData(httpResponse); //分页模式
-		              } else {
-		              	gridOptions.api.setRowData(httpResponse); // 非分页模式
-										addTabRowClick();//行单击事件
-										allSelectModel();// 行全选事件
-										sizeToFit();
-		              }
-	            }
-		      };
-		  // if ()
-		  // ajaxPaging(url);
-		};
+    // 后台远程获取数据全部都加载的情况，让ag-grid自己进行分页
+    function ajaxData(url) {
+      // if ajax data
+      var httpRequest = new XMLHttpRequest();
+      httpRequest.open('GET', url);
+      httpRequest.send();
+      httpRequest.onreadystatechange = function() {
+        if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+          var httpResponse = JSON.parse(httpRequest.responseText);
+          //  console.log(httpResponse);
+          if (opts.tablePaging) {
+            addTabRowClick(); //行单击事件
+            allSelectModel(); // 行全选事件
+            addPageNumBox(); //是否添加页数控制器
+            addTopNum(); // 是否添加顶部页码控制
+            setRowData(httpResponse); //分页模式
+          } else {
+            gridOptions.api.setRowData(httpResponse); // 非分页模式
+            addTabRowClick(); //行单击事件
+            allSelectModel(); // 行全选事件
+            sizeToFit();
+          }
+        }
+      };
+      // if ()
+      // ajaxPaging(url);
+    };
 
-		// window.addEventListener("resize", function(){
-		  	new agGrids.Grid(opts.targetDiv, gridOptions);// 创建表格
-			if (ajaxState) {
-				sizeToFit();
-				if (typeof opts.tableData === 'string') {
-					ajaxData(opts.tableData);
-				} else if (typeof opts.tableData === 'object') {
-					if(opts.tableData.data) {
+    // window.addEventListener("resize", function(){
+    var grid = new agGrids.Grid(opts.targetDiv, gridOptions); // 创建表格
+    if (ajaxState) {
+      sizeToFit();
+      if (typeof opts.tableData === 'string') {
+        ajaxData(opts.tableData);
+      } else if (typeof opts.tableData === 'object') {
+        if (opts.tableData.data) {
 
-						if (opts.tableData.data.length === 4) {
-							// 判断数据格式的正确性（防止在远程数据出现本地数据的格式)
-							for (let i = 0, len = opts.tableData.data.length; i < len; i++) {
-								if (typeof opts.tableData.data[i] === 'object' || typeof opts.tableData.data[3] !== 'function') {
-									console.error('tableData.data: please input correct data!!');
-									return;
-								}
-							}
-							if (opts.tablePaging) {
-								addTabRowClick();//行单击事件
-								allSelectModel();// 行全选事件
-								addPageNumBox(); //是否添加页数控制器
-								addTopNum(); // 是否添加顶部页码控制
-								ajaxPaging(opts.tableData.data[2]);
-							} else {
-								console.error('warning: 在此tableData的情况下，必须设置分页模式，'
-								 + '若不想设置分页模式，则直接将tableData设置成URL即可'
-								);
-							}
+          if (opts.tableData.data.length === 4) {
+            // 判断数据格式的正确性（防止在远程数据出现本地数据的格式)
+            for (let i = 0, len = opts.tableData.data.length; i < len; i++) {
+              if (typeof opts.tableData.data[i] === 'object' || typeof opts.tableData.data[3] !== 'function') {
+                console.error('tableData.data: please input correct data!!');
+                return;
+              }
+            }
+            if (opts.tablePaging) {
+              addTabRowClick(); //行单击事件
+              allSelectModel(); // 行全选事件
+              addPageNumBox(); //是否添加页数控制器
+              addTopNum(); // 是否添加顶部页码控制
+              ajaxPaging(opts.tableData.data[2]);
+            } else {
+              console.error('warning: 在此tableData的情况下，必须设置分页模式，' +
+                '若不想设置分页模式，则直接将tableData设置成URL即可'
+              );
+            }
 
-						} else {
-							console.error('tableData.data: please input correct data type!!');
-							return;
-						}
-					} else {
-						ajaxData(opts.tableData.url);
-					}
-				}
-			}
+          } else {
+            console.error('tableData.data: please input correct data type!!');
+            return;
+          }
+        } else {
+          ajaxData(opts.tableData.url);
+        }
+      }
+    }
 
-		// });
-	}
-	// var GrApi = gridOptions;
-	agTable.agGrid = agGrids;
-	// console.log(agTable.agGrid);
-	return agTable;
-})
-;
+    return gridOptions;
+  }
+
+  return agTable;
+});
