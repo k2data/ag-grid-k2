@@ -16,6 +16,7 @@
   line-height: 23px;
   font-style: normal;
   text-decoration: none;
+	margin-left: -1px;
   border-top-right-radius: .23rem;
   border-bottom-right-radius: .23em;
   box-shadow: inset 0 0 0 1px transparent, inset 0 0 0 0 rgba(34, 36, 38, .15);
@@ -93,8 +94,8 @@
   border: 1px solid rgba(0, 0, 0, 0)!important;
   border-right: 1px dotted #a9a9a9!important;
 }
-.ag-fresh .ag-row:hover {
-background-color: #e3f8ff !important;
+.ag-fresh .ag-body .ag-row:hover {
+background-color: #e3f8ff;
 }
 .ag-fresh .ag-header-cell-menu-button {
   border: none;
@@ -107,6 +108,9 @@ background-color: #e3f8ff !important;
   color: #666;
   font-size: 12px;
   border-color: rgb(204, 204, 204);
+}
+.ag-fresh .ag-filter-filter{
+	border: 1px solid #ccc;
 }
 .ag-paging-button {
   color: #666;
@@ -177,7 +181,7 @@ background-color: #e3f8ff !important;
 }
 .ag-grid-filter-input {
   width: 100px;
-  height: 22px;
+  height: 18px;
   padding-left: 3px;
   border: 1px solid #A9A9A9;
   border-right: none;
