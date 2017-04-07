@@ -847,7 +847,11 @@
           let URL = url + splitO + '' + opts.tableData.data[0] + '=' + pageSize + '' + '&' + '' + opts.tableData.data[1] + '=' + params.endRow / pageSize;
           console.log(URL);
 
-          fetch(URL)
+          fetch(URL, {
+						headers: {
+							'Cache-Control': 'no-cache'
+						}
+					})
             .then(function(response) {
               if (response.status !== 200) {
                 console.log('存在问题，状态码:' + response.status)
