@@ -1,0 +1,22 @@
+{
+  "name": "ag-grid-k2",
+  "version": "0.0.1",
+  "description": "针对于k2中的cosnole项目创建的一个ag-grid插件 更加方便的让大家在项目中使用ag-grid插件去创建一个表格进行展示数据",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k2data/ag-grid-k2.git"
+  },
+  "keywords": [
+    "grid"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/k2data/ag-grid-k2/issues"
+  },
+  "homepage": "https://github.com/k2data/ag-grid-k2#readme"
+}
